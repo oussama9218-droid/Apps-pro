@@ -27,6 +27,9 @@ class PilotageAPITester:
         self.access_token = None
         self.user_id = None
         self.test_results = []
+        self.test_client_id = None
+        self.test_invoice_id = None
+        self.test_notification_id = None
         
     def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
         """Log test results"""
