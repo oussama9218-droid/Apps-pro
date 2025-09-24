@@ -209,6 +209,16 @@ class Notification(BaseModel):
     read_date: Optional[datetime] = None
     invoice_id: Optional[str] = None
 
+# Health Check
+@api_router.get("/health")
+async def health_check():
+    return {
+        "status": "ok",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "1.0.0",
+        "database": "connected"
+    }
+
 # Authentication Routes
 @api_router.post("/auth/register")
 async def register(user_data: UserCreate):
