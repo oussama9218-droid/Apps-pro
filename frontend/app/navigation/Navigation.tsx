@@ -118,17 +118,15 @@ export default function Navigation() {
     );
   }
 
-  return (
-    <NavigationContainer>
-      {!user ? (
-        <AuthStack />
-      ) : !user.is_onboarded ? (
-        <OnboardingStack />
-      ) : (
-        <MainTabs />
-      )}
-    </NavigationContainer>
-  );
+  if (!user) {
+    return <AuthStack />;
+  }
+  
+  if (!user.is_onboarded) {
+    return <OnboardingStack />;
+  }
+  
+  return <MainTabs />;
 }
 
 const styles = StyleSheet.create({
