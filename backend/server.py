@@ -366,7 +366,181 @@ async def delete_client(client_id: str, user_id: str = Depends(verify_token)):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Client non trouvé")
     
-    return {"message": "Client supprimé avec succès"}
+# Phase 2: Reminder System Routes
+@api_router.post("/invoices/{invoice_id}/reminders")
+async def send_invoice_reminder(invoice_id: str, user_id: str = Depends(verify_token)):
+    # Get invoice
+    invoice_doc = await db.invoices.find_one({"id": invoice_id, "user_id": user_id})
+    if not invoice_doc:
+        raise HTTPException(status_code=404, detail="Facture non trouvée")
+    
+    invoice = Invoice(**invoice_doc)
+    
+    if invoice.status == "paid":
+        raise HTTPException(status_code=400, detail="Cette facture est déjà payée")
+    
+    # Determine reminder type based on days overdue and previous reminders
+    days_overdue = 0
+    if invoice.due_date:
+        days_overdue = (datetime.utcnow() - invoice.due_date).days
+    
+    reminder_type = "gentle"
+    if invoice.reminder_count >= 1:
+        reminder_type = "firm"
+    elif invoice.reminder_count >= 2:
+        reminder_type = "final"
+    
+    # Create reminder record
+    reminder = Reminder(
+        user_id=user_id,
+        invoice_id=invoice_id,
+        type=reminder_type,
+        subject=f"Rappel facture {invoice.invoice_number}",
+        message=f"Rappel pour la facture {invoice.invoice_number} de {invoice.amount_ttc}€",
+        sent_date=datetime.utcnow(),
+        email_sent=True,  # Mock email send
+        push_sent=True    # Mock push notification
+    )
+    
+    await db.reminders.insert_one(reminder.model_dump())
+    
+    # Update invoice reminder count and status
+    new_reminder_count = invoice.reminder_count + 1
+    new_status = invoice.status
+    
+    if days_overdue > 0 and invoice.status != "overdue":
+        new_status = "overdue"
+    
+    await db.invoices.update_one(
+        {"id": invoice_id, "user_id": user_id},
+        {
+            "$set": {
+                "reminder_count": new_reminder_count,
+                "last_reminder_date": datetime.utcnow(),
+                "status": new_status
+            }
+        }
+    )
+    
+    return {
+        "message": f"Relance {reminder_type} envoyée avec succès",
+        "reminder_type": reminder_type,
+        "reminder_count": new_reminder_count
+    }
+
+@api_router.get("/invoices/{invoice_id}/reminders")
+async def get_invoice_reminders(invoice_id: str, user_id: str = Depends(verify_token)):
+    reminders = await db.reminders.find({
+        "user_id": user_id,
+        "invoice_id": invoice_id
+    }).sort("sent_date", -1).to_list(10)
+    
+    return [Reminder(**reminder) for reminder in reminders]
+
+# Phase 2: Notification System Routes
+@api_router.get("/notifications")
+async def get_notifications(user_id: str = Depends(verify_token)):
+    notifications = await db.notifications.find({
+        "user_id": user_id
+    }).sort("created_at", -1).limit(20).to_list(20)
+    
+    return [Notification(**notification) for notification in notifications]
+
+@api_router.post("/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str, user_id: str = Depends(verify_token)):
+    result = await db.notifications.update_one(
+        {"id": notification_id, "user_id": user_id},
+        {"$set": {"read_date": datetime.utcnow()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Notification non trouvée")
+    
+    return {"message": "Notification marquée comme lue"}
+
+# Phase 2: Mock notification scheduler (in real app, this would be a background task)
+@api_router.post("/mock/schedule-notifications")
+async def schedule_mock_notifications(user_id: str = Depends(verify_token)):
+    # Get user profile for URSSAF periodicity
+    profile = await db.profiles.find_one({"user_id": user_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profil non trouvé")
+    
+    notifications_created = 0
+    
+    # URSSAF reminders
+    if profile["urssaf_periodicity"] == "monthly":
+        # Monthly URSSAF reminder for next month
+        next_month = datetime.now().replace(day=15) + timedelta(days=32)
+        next_month = next_month.replace(day=15)  # 15th of next month
+        
+        for days_before in [7, 3, 0]:
+            notification_date = next_month - timedelta(days=days_before)
+            
+            notification = Notification(
+                user_id=user_id,
+                type="urssaf_reminder",
+                title=f"Rappel URSSAF - J{-days_before if days_before > 0 else ''}",
+                message=f"N'oubliez pas votre déclaration URSSAF mensuelle (échéance: {next_month.strftime('%d/%m/%Y')})",
+                scheduled_date=notification_date
+            )
+            
+            await db.notifications.insert_one(notification.model_dump())
+            notifications_created += 1
+    
+    # VAT threshold alert (mock)
+    current_revenue = 15000  # Mock current revenue
+    vat_threshold = profile.get("vat_threshold", 36800)
+    threshold_percent = (current_revenue / vat_threshold) * 100
+    
+    if threshold_percent > 70:
+        notification = Notification(
+            user_id=user_id,
+            type="vat_alert",
+            title="Alerte seuil TVA",
+            message=f"Attention: vous avez atteint {threshold_percent:.1f}% du seuil de franchise TVA",
+            scheduled_date=datetime.utcnow()
+        )
+        
+        await db.notifications.insert_one(notification.model_dump())
+        notifications_created += 1
+    
+    return {"message": f"{notifications_created} notifications programmées"}
+
+# Phase 2: Auto-reminder system (mock - would be a background job)
+@api_router.post("/mock/auto-reminders")
+async def process_auto_reminders(user_id: str = Depends(verify_token)):
+    # Find overdue invoices that need reminders
+    overdue_date_j7 = datetime.utcnow() - timedelta(days=7)
+    overdue_date_j14 = datetime.utcnow() - timedelta(days=14)
+    
+    invoices_j7 = await db.invoices.find({
+        "user_id": user_id,
+        "status": {"$in": ["sent", "overdue"]},
+        "due_date": {"$lt": overdue_date_j7},
+        "reminder_count": 0
+    }).to_list(10)
+    
+    invoices_j14 = await db.invoices.find({
+        "user_id": user_id,
+        "status": "overdue",
+        "due_date": {"$lt": overdue_date_j14},
+        "reminder_count": 1
+    }).to_list(10)
+    
+    reminders_sent = 0
+    
+    # Send J+7 gentle reminders
+    for invoice_doc in invoices_j7:
+        await send_invoice_reminder(invoice_doc["id"], user_id)
+        reminders_sent += 1
+    
+    # Send J+14 firm reminders
+    for invoice_doc in invoices_j14:
+        await send_invoice_reminder(invoice_doc["id"], user_id)
+        reminders_sent += 1
+    
+    return {"message": f"{reminders_sent} relances automatiques envoyées"}
 
 # Phase 2: PDF Generation
 def generate_invoice_pdf(invoice: Invoice, user_profile: dict, user_info: dict) -> bytes:
