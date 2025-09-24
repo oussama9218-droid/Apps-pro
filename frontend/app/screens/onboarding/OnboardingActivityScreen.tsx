@@ -31,12 +31,17 @@ const activityOptions: ActivityOption[] = [
   }
 ];
 
-export default function OnboardingActivityScreen({ navigation }: any) {
+interface Props {
+  onNext: (data: { activityType: string }) => void;
+  onBack: () => void;
+}
+
+export default function OnboardingActivityScreen({ onNext, onBack }: Props) {
   const [selectedActivity, setSelectedActivity] = useState<string>('');
 
   const handleContinue = () => {
     if (selectedActivity) {
-      navigation.navigate('OnboardingURSSAF', { activityType: selectedActivity });
+      onNext({ activityType: selectedActivity });
     }
   };
 
@@ -46,7 +51,7 @@ export default function OnboardingActivityScreen({ navigation }: any) {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={onBack}
           >
             <Ionicons name="arrow-back" size={24} color="#007AFF" />
           </TouchableOpacity>

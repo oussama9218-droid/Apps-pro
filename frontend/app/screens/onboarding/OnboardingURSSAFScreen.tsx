@@ -31,16 +31,18 @@ const periodicityOptions: PeriodicityOption[] = [
   }
 ];
 
-export default function OnboardingURSSAFScreen({ navigation, route }: any) {
-  const { activityType } = route.params;
+interface Props {
+  onNext: (data: { urssafPeriodicity: string }) => void;
+  onBack: () => void;
+  activityType: string;
+}
+
+export default function OnboardingURSSAFScreen({ onNext, onBack, activityType }: Props) {
   const [selectedPeriodicity, setSelectedPeriodicity] = useState<string>('');
 
   const handleContinue = () => {
     if (selectedPeriodicity) {
-      navigation.navigate('OnboardingVAT', {
-        activityType,
-        urssafPeriodicity: selectedPeriodicity
-      });
+      onNext({ urssafPeriodicity: selectedPeriodicity });
     }
   };
 
@@ -50,7 +52,7 @@ export default function OnboardingURSSAFScreen({ navigation, route }: any) {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={onBack}
           >
             <Ionicons name="arrow-back" size={24} color="#007AFF" />
           </TouchableOpacity>
