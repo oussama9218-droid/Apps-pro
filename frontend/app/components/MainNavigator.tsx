@@ -7,9 +7,10 @@ import { Ionicons } from '@expo/vector-icons';
 import DashboardScreen from '../screens/main/DashboardScreen';
 import InvoicesScreen from '../screens/main/InvoicesScreen';
 import CreateInvoiceScreen from '../screens/main/CreateInvoiceScreen';
+import ClientsScreen from '../screens/main/ClientsScreen';
 import ProfileScreen from '../screens/main/ProfileScreen';
 
-type TabName = 'dashboard' | 'invoices' | 'profile';
+type TabName = 'dashboard' | 'invoices' | 'clients' | 'profile';
 type InvoiceScreen = 'list' | 'create';
 
 export default function MainNavigator() {
@@ -36,10 +37,23 @@ export default function MainNavigator() {
         return (
           <InvoicesScreen 
             navigation={{
-              navigate: (screen: string) => {
+              navigate: (screen: string, params?: any) => {
                 if (screen === 'CreateInvoice') setInvoiceScreen('create');
               },
               addListener: () => () => {}, // Mock for useEffect listener
+            }}
+          />
+        );
+      case 'clients':
+        return (
+          <ClientsScreen
+            navigation={{
+              navigate: (screen: string, params?: any) => {
+                if (screen === 'CreateInvoice') {
+                  setActiveTab('invoices');
+                  setInvoiceScreen('create');
+                }
+              }
             }}
           />
         );
@@ -54,6 +68,7 @@ export default function MainNavigator() {
     const iconMap = {
       dashboard: focused ? 'analytics' : 'analytics-outline',
       invoices: focused ? 'document-text' : 'document-text-outline', 
+      clients: focused ? 'people' : 'people-outline',
       profile: focused ? 'person' : 'person-outline',
     };
     return iconMap[tabName] as keyof typeof Ionicons.glyphMap;
@@ -63,6 +78,7 @@ export default function MainNavigator() {
     const labelMap = {
       dashboard: 'Tableau de bord',
       invoices: 'Factures',
+      clients: 'Clients',
       profile: 'Profil',
     };
     return labelMap[tabName];
@@ -76,7 +92,7 @@ export default function MainNavigator() {
       
       {/* Bottom Tab Navigation */}
       <View style={styles.tabBar}>
-        {(['dashboard', 'invoices', 'profile'] as TabName[]).map((tab) => {
+        {(['dashboard', 'invoices', 'clients', 'profile'] as TabName[]).map((tab) => {
           const isActive = activeTab === tab;
           return (
             <TouchableOpacity
@@ -89,7 +105,7 @@ export default function MainNavigator() {
             >
               <Ionicons
                 name={getTabIcon(tab, isActive)}
-                size={24}
+                size={22}
                 color={isActive ? '#007AFF' : '#8E8E93'}
               />
               <Text style={[
