@@ -58,6 +58,14 @@ export default function MainNavigator() {
             }}
           />
         );
+      case 'notifications':
+        return (
+          <NotificationsScreen
+            navigation={{
+              goBack: () => setActiveTab('dashboard')
+            }}
+          />
+        );
       case 'profile':
         return <ProfileScreen />;
       default:
