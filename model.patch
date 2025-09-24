@@ -1,261 +1,266 @@
-diff --git a/frontend/app/screens/auth/LoginScreen.tsx b/frontend/app/screens/auth/LoginScreen.tsx
-index cb36ea5..df7c71b 100644
---- a/frontend/app/screens/auth/LoginScreen.tsx
-+++ b/frontend/app/screens/auth/LoginScreen.tsx
-@@ -14,22 +14,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
- import { Ionicons } from '@expo/vector-icons';
- import { useAuth } from '../../contexts/AuthContext';
- 
--import React, { useState } from 'react';
--import {
--  View,
--  Text,
--  TextInput,
--  TouchableOpacity,
--  StyleSheet,
--  Alert,
--  KeyboardAvoidingView,
--  Platform,
--  ScrollView,
--} from 'react-native';
--import { SafeAreaView } from 'react-native-safe-area-context';
--import { Ionicons } from '@expo/vector-icons';
--import { useAuth } from '../../contexts/AuthContext';
--
- export default function LoginScreen() {
-   const [email, setEmail] = useState('');
-   const [password, setPassword] = useState('');
-@@ -306,112 +290,6 @@ function RegisterForm({ onBack }: { onBack: () => void }) {
-     </SafeAreaView>
-   );
- }
--  const [email, setEmail] = useState('');
--  const [password, setPassword] = useState('');
--  const [loading, setLoading] = useState(false);
--  const [showPassword, setShowPassword] = useState(false);
--  const { login } = useAuth();
--
--  const handleLogin = async () => {
--    if (!email || !password) {
--      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
--      return;
--    }
--
--    setLoading(true);
--    try {
--      await login(email, password);
--    } catch (error: any) {
--      Alert.alert('Erreur de connexion', error.message);
--    } finally {
--      setLoading(false);
--    }
--  };
--
--  return (
--    <SafeAreaView style={styles.container}>
--      <KeyboardAvoidingView
--        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
--        style={styles.keyboardAvoidingView}
--      >
--        <ScrollView contentContainerStyle={styles.scrollContent}>
--          <View style={styles.header}>
--            <Ionicons name="analytics" size={64} color="#007AFF" />
--            <Text style={styles.title}>Pilotage Micro</Text>
--            <Text style={styles.subtitle}>
--              Gérez vos obligations fiscales en toute simplicité
--            </Text>
--          </View>
--
--          <View style={styles.form}>
--            <View style={styles.inputContainer}>
--              <Ionicons name="mail-outline" size={20} color="#666" style={styles.inputIcon} />
--              <TextInput
--                style={styles.input}
--                placeholder="Email"
--                value={email}
--                onChangeText={setEmail}
--                keyboardType="email-address"
--                autoCapitalize="none"
--                autoCorrect={false}
--              />
--            </View>
--
--            <View style={styles.inputContainer}>
--              <Ionicons name="lock-closed-outline" size={20} color="#666" style={styles.inputIcon} />
--              <TextInput
--                style={styles.input}
--                placeholder="Mot de passe"
--                value={password}
--                onChangeText={setPassword}
--                secureTextEntry={!showPassword}
--              />
--              <TouchableOpacity
--                style={styles.eyeIcon}
--                onPress={() => setShowPassword(!showPassword)}
--              >
--                <Ionicons
--                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
--                  size={20}
--                  color="#666"
--                />
--              </TouchableOpacity>
--            </View>
--
--            <TouchableOpacity
--              style={[styles.loginButton, loading && styles.disabledButton]}
--              onPress={handleLogin}
--              disabled={loading}
--            >
--              <Text style={styles.loginButtonText}>
--                {loading ? 'Connexion...' : 'Se connecter'}
--              </Text>
--            </TouchableOpacity>
--
--            <View style={styles.divider}>
--              <View style={styles.dividerLine} />
--              <Text style={styles.dividerText}>ou</Text>
--              <View style={styles.dividerLine} />
--            </View>
--
--            <TouchableOpacity
--              style={styles.registerButton}
--              onPress={() => navigation.navigate('Register')}
--            >
--              <Text style={styles.registerButtonText}>Créer un compte</Text>
--            </TouchableOpacity>
--          </View>
--
--          <View style={styles.footer}>
--            <Text style={styles.footerText}>
--              En vous connectant, vous acceptez nos conditions d'utilisation
--            </Text>
--          </View>
--        </ScrollView>
--      </KeyboardAvoidingView>
--    </SafeAreaView>
--  );
--}
- 
- const styles = StyleSheet.create({
-   container: {
 diff --git a/model.patch b/model.patch
-index bffdae9..dc2e76c 100644
+index 2c8f264..e69de29 100644
 --- a/model.patch
 +++ b/model.patch
-@@ -1,116 +0,0 @@
--diff --git a/test_result.md b/test_result.md
--index ee20a26..bde1ece 100644
----- a/test_result.md
--+++ b/test_result.md
--@@ -107,63 +107,78 @@
-- ## backend:
--   - task: "Authentication System (JWT)"
--     implemented: true
---    working: "NA"
--+    working: true
--     file: "/app/backend/server.py"
--     stuck_count: 0
--     priority: "high"
---    needs_retesting: true
--+    needs_retesting: false
--     status_history:
--         - working: "NA"
--         - agent: "main"
--         - comment: "Implemented JWT authentication with user registration, login, and token verification. Ready for testing."
--+        - working: true
--+        - agent: "testing"
--+        - comment: "✅ TESTED: All authentication endpoints working perfectly. User registration creates account with JWT token, login validates credentials and returns token, token verification works for protected endpoints. Error handling correctly rejects invalid credentials and unauthorized access."
+@@ -1,261 +0,0 @@
+-diff --git a/frontend/app/screens/auth/LoginScreen.tsx b/frontend/app/screens/auth/LoginScreen.tsx
+-index cb36ea5..df7c71b 100644
+---- a/frontend/app/screens/auth/LoginScreen.tsx
+-+++ b/frontend/app/screens/auth/LoginScreen.tsx
+-@@ -14,22 +14,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
+- import { Ionicons } from '@expo/vector-icons';
+- import { useAuth } from '../../contexts/AuthContext';
 - 
--   - task: "User Profile Management"
--     implemented: true
---    working: "NA"
--+    working: true
--     file: "/app/backend/server.py"
--     stuck_count: 0
--     priority: "high"
---    needs_retesting: true
--+    needs_retesting: false
--     status_history:
--         - working: "NA"
--         - agent: "main"
--         - comment: "Implemented profile creation and update with fiscal information (BIC/BNC, URSSAF periodicity, VAT regime, thresholds). Ready for testing."
--+        - working: true
--+        - agent: "testing"
--+        - comment: "✅ TESTED: Profile management fully functional. Profile creation works with all fiscal configurations (BIC/BNC, URSSAF periodicity, VAT regimes, thresholds). Profile retrieval and updates working correctly. User onboarding status properly updated."
+--import React, { useState } from 'react';
+--import {
+--  View,
+--  Text,
+--  TextInput,
+--  TouchableOpacity,
+--  StyleSheet,
+--  Alert,
+--  KeyboardAvoidingView,
+--  Platform,
+--  ScrollView,
+--} from 'react-native';
+--import { SafeAreaView } from 'react-native-safe-area-context';
+--import { Ionicons } from '@expo/vector-icons';
+--import { useAuth } from '../../contexts/AuthContext';
+--
+- export default function LoginScreen() {
+-   const [email, setEmail] = useState('');
+-   const [password, setPassword] = useState('');
+-@@ -306,112 +290,6 @@ function RegisterForm({ onBack }: { onBack: () => void }) {
+-     </SafeAreaView>
+-   );
+- }
+--  const [email, setEmail] = useState('');
+--  const [password, setPassword] = useState('');
+--  const [loading, setLoading] = useState(false);
+--  const [showPassword, setShowPassword] = useState(false);
+--  const { login } = useAuth();
+--
+--  const handleLogin = async () => {
+--    if (!email || !password) {
+--      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+--      return;
+--    }
+--
+--    setLoading(true);
+--    try {
+--      await login(email, password);
+--    } catch (error: any) {
+--      Alert.alert('Erreur de connexion', error.message);
+--    } finally {
+--      setLoading(false);
+--    }
+--  };
+--
+--  return (
+--    <SafeAreaView style={styles.container}>
+--      <KeyboardAvoidingView
+--        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+--        style={styles.keyboardAvoidingView}
+--      >
+--        <ScrollView contentContainerStyle={styles.scrollContent}>
+--          <View style={styles.header}>
+--            <Ionicons name="analytics" size={64} color="#007AFF" />
+--            <Text style={styles.title}>Pilotage Micro</Text>
+--            <Text style={styles.subtitle}>
+--              Gérez vos obligations fiscales en toute simplicité
+--            </Text>
+--          </View>
+--
+--          <View style={styles.form}>
+--            <View style={styles.inputContainer}>
+--              <Ionicons name="mail-outline" size={20} color="#666" style={styles.inputIcon} />
+--              <TextInput
+--                style={styles.input}
+--                placeholder="Email"
+--                value={email}
+--                onChangeText={setEmail}
+--                keyboardType="email-address"
+--                autoCapitalize="none"
+--                autoCorrect={false}
+--              />
+--            </View>
+--
+--            <View style={styles.inputContainer}>
+--              <Ionicons name="lock-closed-outline" size={20} color="#666" style={styles.inputIcon} />
+--              <TextInput
+--                style={styles.input}
+--                placeholder="Mot de passe"
+--                value={password}
+--                onChangeText={setPassword}
+--                secureTextEntry={!showPassword}
+--              />
+--              <TouchableOpacity
+--                style={styles.eyeIcon}
+--                onPress={() => setShowPassword(!showPassword)}
+--              >
+--                <Ionicons
+--                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+--                  size={20}
+--                  color="#666"
+--                />
+--              </TouchableOpacity>
+--            </View>
+--
+--            <TouchableOpacity
+--              style={[styles.loginButton, loading && styles.disabledButton]}
+--              onPress={handleLogin}
+--              disabled={loading}
+--            >
+--              <Text style={styles.loginButtonText}>
+--                {loading ? 'Connexion...' : 'Se connecter'}
+--              </Text>
+--            </TouchableOpacity>
+--
+--            <View style={styles.divider}>
+--              <View style={styles.dividerLine} />
+--              <Text style={styles.dividerText}>ou</Text>
+--              <View style={styles.dividerLine} />
+--            </View>
+--
+--            <TouchableOpacity
+--              style={styles.registerButton}
+--              onPress={() => navigation.navigate('Register')}
+--            >
+--              <Text style={styles.registerButtonText}>Créer un compte</Text>
+--            </TouchableOpacity>
+--          </View>
+--
+--          <View style={styles.footer}>
+--            <Text style={styles.footerText}>
+--              En vous connectant, vous acceptez nos conditions d'utilisation
+--            </Text>
+--          </View>
+--        </ScrollView>
+--      </KeyboardAvoidingView>
+--    </SafeAreaView>
+--  );
+--}
 - 
--   - task: "Invoice Management"
--     implemented: true
---    working: "NA"
--+    working: true
--     file: "/app/backend/server.py"
--     stuck_count: 0
--     priority: "high"
---    needs_retesting: true
--+    needs_retesting: false
--     status_history:
--         - working: "NA"
--         - agent: "main"
--         - comment: "Implemented invoice creation, listing, and status updates with automatic numbering and VAT calculations. Ready for testing."
--+        - working: true
--+        - agent: "testing"
--+        - comment: "✅ TESTED: Invoice management system fully operational. Invoice creation works with automatic numbering (FAC-2025-0001), VAT calculations based on user profile, invoice listing retrieves all user invoices, status updates work for all states (draft/sent/paid/overdue). Payment tracking with paid_at timestamp working correctly."
-- 
--   - task: "Dashboard API"
--     implemented: true
---    working: "NA"
--+    working: true
--     file: "/app/backend/server.py"
--     stuck_count: 0
--     priority: "high"
---    needs_retesting: true
--+    needs_retesting: false
--     status_history:
--         - working: "NA"
--         - agent: "main"
--         - comment: "Implemented dashboard with revenue tracking, threshold percentages, obligations, and mock bank transactions. Ready for testing."
--+        - working: true
--+        - agent: "testing"
--+        - comment: "✅ TESTED: Dashboard API working perfectly. Revenue calculation accurate (€3000 from paid invoices), threshold percentages calculated correctly (3.9% micro, 8.2% VAT), obligations integration working, mock bank transactions displayed properly. All fiscal data and user configuration properly reflected."
-- 
--   - task: "Mock Obligations System"
--     implemented: true
---    working: "NA"
--+    working: true
--     file: "/app/backend/server.py"
--     stuck_count: 0
--     priority: "medium"
---    needs_retesting: true
--+    needs_retesting: false
--     status_history:
--         - working: "NA"
--         - agent: "main"
--         - comment: "Implemented mock URSSAF and VAT obligations initialization based on user profile. Ready for testing."
--+        - working: true
--+        - agent: "testing"
--+        - comment: "✅ TESTED: Mock obligations system working correctly. Creates appropriate obligations based on user profile (URSSAF monthly/quarterly, VAT obligations for non-franchise regimes). Obligations properly integrated with dashboard display. Checklist items and due dates calculated correctly."
-- 
-- ## frontend:
--   - task: "Authentication Screens"
--@@ -245,16 +260,13 @@
--   run_ui: false
-- 
-- ## test_plan:
---  current_focus:
---    - "Authentication System (JWT)"
---    - "User Profile Management" 
---    - "Invoice Management"
---    - "Dashboard API"
---    - "Mock Obligations System"
--+  current_focus: []
--   stuck_tasks: []
--   test_all: false
--   test_priority: "high_first"
-- 
-- ## agent_communication:
--     - agent: "main"
---    - message: "Completed implementation of Pilotage Micro MVP with full backend API and frontend mobile app. Backend includes JWT auth, profile management, invoice system, dashboard with threshold tracking, and mock obligations. Frontend includes complete onboarding flow, dashboard, invoicing, and profile screens. All backend endpoints ready for testing. Frontend will be tested after backend validation."
--\ No newline at end of file
--+    - message: "Completed implementation of Pilotage Micro MVP with full backend API and frontend mobile app. Backend includes JWT auth, profile management, invoice system, dashboard with threshold tracking, and mock obligations. Frontend includes complete onboarding flow, dashboard, invoicing, and profile screens. All backend endpoints ready for testing. Frontend will be tested after backend validation."
--+    - agent: "testing"
--+    - message: "✅ BACKEND TESTING COMPLETE: All 5 high-priority backend tasks tested successfully with 100% pass rate (15/15 tests passed). Authentication system, user profile management, invoice management, dashboard API, and mock obligations system all working perfectly. Fixed minor bcrypt dependency issue during testing. All endpoints responding correctly with proper error handling. Backend is production-ready."
--\ No newline at end of file
+- const styles = StyleSheet.create({
+-   container: {
+-diff --git a/model.patch b/model.patch
+-index bffdae9..dc2e76c 100644
+---- a/model.patch
+-+++ b/model.patch
+-@@ -1,116 +0,0 @@
+--diff --git a/test_result.md b/test_result.md
+--index ee20a26..bde1ece 100644
+----- a/test_result.md
+--+++ b/test_result.md
+--@@ -107,63 +107,78 @@
+-- ## backend:
+--   - task: "Authentication System (JWT)"
+--     implemented: true
+---    working: "NA"
+--+    working: true
+--     file: "/app/backend/server.py"
+--     stuck_count: 0
+--     priority: "high"
+---    needs_retesting: true
+--+    needs_retesting: false
+--     status_history:
+--         - working: "NA"
+--         - agent: "main"
+--         - comment: "Implemented JWT authentication with user registration, login, and token verification. Ready for testing."
+--+        - working: true
+--+        - agent: "testing"
+--+        - comment: "✅ TESTED: All authentication endpoints working perfectly. User registration creates account with JWT token, login validates credentials and returns token, token verification works for protected endpoints. Error handling correctly rejects invalid credentials and unauthorized access."
+-- 
+--   - task: "User Profile Management"
+--     implemented: true
+---    working: "NA"
+--+    working: true
+--     file: "/app/backend/server.py"
+--     stuck_count: 0
+--     priority: "high"
+---    needs_retesting: true
+--+    needs_retesting: false
+--     status_history:
+--         - working: "NA"
+--         - agent: "main"
+--         - comment: "Implemented profile creation and update with fiscal information (BIC/BNC, URSSAF periodicity, VAT regime, thresholds). Ready for testing."
+--+        - working: true
+--+        - agent: "testing"
+--+        - comment: "✅ TESTED: Profile management fully functional. Profile creation works with all fiscal configurations (BIC/BNC, URSSAF periodicity, VAT regimes, thresholds). Profile retrieval and updates working correctly. User onboarding status properly updated."
+-- 
+--   - task: "Invoice Management"
+--     implemented: true
+---    working: "NA"
+--+    working: true
+--     file: "/app/backend/server.py"
+--     stuck_count: 0
+--     priority: "high"
+---    needs_retesting: true
+--+    needs_retesting: false
+--     status_history:
+--         - working: "NA"
+--         - agent: "main"
+--         - comment: "Implemented invoice creation, listing, and status updates with automatic numbering and VAT calculations. Ready for testing."
+--+        - working: true
+--+        - agent: "testing"
+--+        - comment: "✅ TESTED: Invoice management system fully operational. Invoice creation works with automatic numbering (FAC-2025-0001), VAT calculations based on user profile, invoice listing retrieves all user invoices, status updates work for all states (draft/sent/paid/overdue). Payment tracking with paid_at timestamp working correctly."
+-- 
+--   - task: "Dashboard API"
+--     implemented: true
+---    working: "NA"
+--+    working: true
+--     file: "/app/backend/server.py"
+--     stuck_count: 0
+--     priority: "high"
+---    needs_retesting: true
+--+    needs_retesting: false
+--     status_history:
+--         - working: "NA"
+--         - agent: "main"
+--         - comment: "Implemented dashboard with revenue tracking, threshold percentages, obligations, and mock bank transactions. Ready for testing."
+--+        - working: true
+--+        - agent: "testing"
+--+        - comment: "✅ TESTED: Dashboard API working perfectly. Revenue calculation accurate (€3000 from paid invoices), threshold percentages calculated correctly (3.9% micro, 8.2% VAT), obligations integration working, mock bank transactions displayed properly. All fiscal data and user configuration properly reflected."
+-- 
+--   - task: "Mock Obligations System"
+--     implemented: true
+---    working: "NA"
+--+    working: true
+--     file: "/app/backend/server.py"
+--     stuck_count: 0
+--     priority: "medium"
+---    needs_retesting: true
+--+    needs_retesting: false
+--     status_history:
+--         - working: "NA"
+--         - agent: "main"
+--         - comment: "Implemented mock URSSAF and VAT obligations initialization based on user profile. Ready for testing."
+--+        - working: true
+--+        - agent: "testing"
+--+        - comment: "✅ TESTED: Mock obligations system working correctly. Creates appropriate obligations based on user profile (URSSAF monthly/quarterly, VAT obligations for non-franchise regimes). Obligations properly integrated with dashboard display. Checklist items and due dates calculated correctly."
+-- 
+-- ## frontend:
+--   - task: "Authentication Screens"
+--@@ -245,16 +260,13 @@
+--   run_ui: false
+-- 
+-- ## test_plan:
+---  current_focus:
+---    - "Authentication System (JWT)"
+---    - "User Profile Management" 
+---    - "Invoice Management"
+---    - "Dashboard API"
+---    - "Mock Obligations System"
+--+  current_focus: []
+--   stuck_tasks: []
+--   test_all: false
+--   test_priority: "high_first"
+-- 
+-- ## agent_communication:
+--     - agent: "main"
+---    - message: "Completed implementation of Pilotage Micro MVP with full backend API and frontend mobile app. Backend includes JWT auth, profile management, invoice system, dashboard with threshold tracking, and mock obligations. Frontend includes complete onboarding flow, dashboard, invoicing, and profile screens. All backend endpoints ready for testing. Frontend will be tested after backend validation."
+--\ No newline at end of file
+--+    - message: "Completed implementation of Pilotage Micro MVP with full backend API and frontend mobile app. Backend includes JWT auth, profile management, invoice system, dashboard with threshold tracking, and mock obligations. Frontend includes complete onboarding flow, dashboard, invoicing, and profile screens. All backend endpoints ready for testing. Frontend will be tested after backend validation."
+--+    - agent: "testing"
+--+    - message: "✅ BACKEND TESTING COMPLETE: All 5 high-priority backend tasks tested successfully with 100% pass rate (15/15 tests passed). Authentication system, user profile management, invoice management, dashboard API, and mock obligations system all working perfectly. Fixed minor bcrypt dependency issue during testing. All endpoints responding correctly with proper error handling. Backend is production-ready."
+--\ No newline at end of file
