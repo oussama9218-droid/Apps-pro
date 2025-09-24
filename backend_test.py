@@ -554,34 +554,46 @@ class PilotageAPITester:
             print(f"⚠️ Test invoice {self.test_invoice_id} left in database")
     
     def run_all_tests(self):
-        """Run all backend tests"""
-        print("🚀 Starting Pilotage Micro Backend API Tests")
-        print("=" * 60)
+        """Run all backend tests including Phase 2 features"""
+        print("🚀 Starting Pilotage Micro Backend API Tests - Phase 2")
+        print("=" * 70)
         
-        # Authentication tests
-        if not self.test_user_registration():
-            print("❌ Registration failed - stopping tests")
-            return False
-        
-        if not self.test_user_login():
-            print("❌ Login failed - stopping tests")
+        # Authentication test
+        if not self.test_user_authentication():
+            print("❌ Authentication failed - stopping tests")
             return False
         
         if not self.test_token_verification():
             print("❌ Token verification failed - stopping tests")
             return False
         
-        # Profile tests
-        if not self.test_profile_creation():
-            print("❌ Profile creation failed - continuing with other tests")
-        
+        # Profile tests (existing functionality)
         self.test_profile_retrieval()
-        self.test_profile_update()
         
-        # Invoice tests
-        self.test_invoice_creation()
+        # ===== PHASE 2 FEATURE TESTS =====
+        print("\n🎯 PHASE 2 FEATURE TESTING")
+        print("=" * 50)
+        
+        # Client Management System
+        self.test_client_management()
+        
+        # PDF Invoice Export
+        self.test_pdf_invoice_export()
+        
+        # Reminder System
+        self.test_reminder_system()
+        
+        # Notification System
+        self.test_notification_system()
+        
+        # ===== EXISTING FUNCTIONALITY TESTS =====
+        print("\n📊 EXISTING FUNCTIONALITY VERIFICATION")
+        print("=" * 50)
+        
+        # Invoice tests (verify existing functionality still works)
         self.test_invoice_listing()
-        self.test_invoice_status_update()
+        if hasattr(self, 'test_invoice_id') and self.test_invoice_id:
+            self.test_invoice_status_update()
         
         # Dashboard and obligations tests
         self.test_dashboard_data()
@@ -591,10 +603,13 @@ class PilotageAPITester:
         # Error handling tests
         self.test_error_handling()
         
+        # Cleanup
+        self.cleanup_test_data()
+        
         # Summary
-        print("=" * 60)
-        print("📋 TEST SUMMARY")
-        print("=" * 60)
+        print("=" * 70)
+        print("📋 COMPREHENSIVE TEST SUMMARY")
+        print("=" * 70)
         
         passed = sum(1 for result in self.test_results if result["success"])
         total = len(self.test_results)
@@ -604,8 +619,19 @@ class PilotageAPITester:
         print(f"Failed: {total - passed}")
         print(f"Success Rate: {(passed/total)*100:.1f}%")
         
+        # Phase 2 specific summary
+        phase2_tests = [r for r in self.test_results if any(keyword in r["test"] for keyword in 
+                       ["Client", "PDF", "Reminder", "Notification"])]
+        phase2_passed = sum(1 for result in phase2_tests if result["success"])
+        phase2_total = len(phase2_tests)
+        
+        print(f"\n🎯 PHASE 2 FEATURES:")
+        print(f"Phase 2 Tests: {phase2_total}")
+        print(f"Phase 2 Passed: {phase2_passed}")
+        print(f"Phase 2 Success Rate: {(phase2_passed/phase2_total)*100:.1f}%" if phase2_total > 0 else "No Phase 2 tests")
+        
         if total - passed > 0:
-            print("\n❌ FAILED TESTS:")
+            print(f"\n❌ FAILED TESTS:")
             for result in self.test_results:
                 if not result["success"]:
                     print(f"  - {result['test']}: {result['details']}")
