@@ -101,7 +101,32 @@ class UserProfile(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
+# Phase 2: Client Management Models
+class ClientCreate(BaseModel):
+    name: str
+    email: EmailStr
+    siret: Optional[str] = None
+    address: str
+    phone: Optional[str] = None
+    notes: Optional[str] = None
+
+class Client(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    name: str
+    email: str
+    siret: Optional[str] = None
+    address: str
+    phone: Optional[str] = None
+    notes: Optional[str] = None
+    total_invoices: int = 0
+    total_amount: float = 0.0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+# Phase 2: Enhanced Invoice Models
 class InvoiceCreate(BaseModel):
+    client_id: Optional[str] = None  # Link to client or manual entry
     client_name: str
     client_email: str
     client_address: str
@@ -112,6 +137,7 @@ class InvoiceCreate(BaseModel):
 class Invoice(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     user_id: str
+    client_id: Optional[str] = None
     invoice_number: str
     client_name: str
     client_email: str
@@ -124,6 +150,26 @@ class Invoice(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     due_date: Optional[datetime] = None
     paid_at: Optional[datetime] = None
+    pdf_path: Optional[str] = None  # Path to generated PDF
+    reminder_count: int = 0  # Number of reminders sent
+    last_reminder_date: Optional[datetime] = None
+
+# Phase 2: Reminder System Models
+class ReminderCreate(BaseModel):
+    invoice_id: str
+    type: str  # "gentle", "firm", "final"
+    send_date: datetime
+
+class Reminder(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    invoice_id: str
+    type: str  # "gentle", "firm", "final"
+    subject: str
+    message: str
+    sent_date: datetime
+    email_sent: bool = False
+    push_sent: bool = False
 
 class MockBankTransaction(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -144,6 +190,26 @@ class Obligation(BaseModel):
     status: str = "pending"  # pending, completed, overdue
     estimated_amount: Optional[float] = None
     checklist_items: List[str] = []
+
+# Phase 2: Notification Models
+class NotificationCreate(BaseModel):
+    type: str  # "urssaf_reminder", "vat_alert", "invoice_reminder"
+    title: str
+    message: str
+    schedule_date: datetime
+    invoice_id: Optional[str] = None
+
+class Notification(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    type: str
+    title: str
+    message: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    scheduled_date: datetime
+    sent_date: Optional[datetime] = None
+    read_date: Optional[datetime] = None
+    invoice_id: Optional[str] = None
 
 # Authentication Routes
 @api_router.post("/auth/register")
