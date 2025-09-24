@@ -181,6 +181,204 @@ class PilotageAPITester:
             self.log_test("Profile Update", False, f"Status: {status_code}", response)
             return False
     
+    # ===== PHASE 2 TESTS =====
+    
+    def test_client_management(self):
+        """Test Phase 2 - Client Management System"""
+        print("👥 Testing Client Management System...")
+        
+        # Test 1: Create client
+        client_data = {
+            "name": "Entreprise Innovante SARL",
+            "email": "contact@entreprise-innovante.fr",
+            "siret": "12345678901234",
+            "address": "123 Avenue des Champs-Élysées, 75008 Paris",
+            "phone": "0123456789",
+            "notes": "Client test pour validation Phase 2"
+        }
+        
+        success, response, status_code = self.make_request("POST", "/clients", client_data)
+        
+        if success and "id" in response:
+            self.test_client_id = response["id"]
+            self.log_test("Client Creation", True, f"Client created: {response['name']}")
+        else:
+            self.log_test("Client Creation", False, f"Status: {status_code}", response)
+            return False
+        
+        # Test 2: Get all clients
+        success, response, status_code = self.make_request("GET", "/clients")
+        
+        if success and isinstance(response, list) and len(response) > 0:
+            self.log_test("Client List", True, f"Retrieved {len(response)} clients")
+        else:
+            self.log_test("Client List", False, f"Status: {status_code}", response)
+        
+        # Test 3: Get specific client
+        success, response, status_code = self.make_request("GET", f"/clients/{self.test_client_id}")
+        
+        if success and response.get("id") == self.test_client_id:
+            self.log_test("Client Retrieval", True, f"Retrieved client: {response.get('name')}")
+        else:
+            self.log_test("Client Retrieval", False, f"Status: {status_code}", response)
+        
+        # Test 4: Update client
+        update_data = {
+            "name": "Entreprise Innovante SARL - Modifiée",
+            "email": "contact@entreprise-innovante.fr",
+            "siret": "12345678901234",
+            "address": "456 Rue de Rivoli, 75001 Paris",
+            "phone": "0123456789",
+            "notes": "Client test modifié"
+        }
+        
+        success, response, status_code = self.make_request("PUT", f"/clients/{self.test_client_id}", update_data)
+        
+        if success and response.get("name") == update_data["name"]:
+            self.log_test("Client Update", True, "Client updated successfully")
+        else:
+            self.log_test("Client Update", False, f"Status: {status_code}", response)
+        
+        # Test 5: Duplicate email validation
+        duplicate_client = {
+            "name": "Autre Entreprise",
+            "email": "contact@entreprise-innovante.fr",  # Same email
+            "address": "789 Rue Autre, 75009 Paris"
+        }
+        
+        success, response, status_code = self.make_request("POST", "/clients", duplicate_client)
+        
+        if not success and status_code == 400:
+            self.log_test("Duplicate Email Validation", True, "Correctly rejected duplicate email")
+        else:
+            self.log_test("Duplicate Email Validation", False, f"Should have rejected duplicate. Status: {status_code}")
+        
+        return True
+    
+    def test_pdf_invoice_export(self):
+        """Test Phase 2 - PDF Invoice Export"""
+        print("📄 Testing PDF Invoice Export...")
+        
+        # Create invoice with client for PDF generation
+        invoice_data = {
+            "client_id": self.test_client_id,
+            "client_name": "Entreprise Innovante SARL",
+            "client_email": "contact@entreprise-innovante.fr",
+            "client_address": "123 Avenue des Champs-Élysées, 75008 Paris",
+            "amount_ht": 2500.0,
+            "description": "Développement application web - Phase 2",
+            "due_date": (datetime.now() + timedelta(days=30)).isoformat()
+        }
+        
+        success, response, status_code = self.make_request("POST", "/invoices", invoice_data)
+        
+        if success and "id" in response:
+            self.test_invoice_id = response["id"]
+            self.log_test("Invoice Creation for PDF", True, f"Invoice {response['invoice_number']} created")
+        else:
+            self.log_test("Invoice Creation for PDF", False, f"Status: {status_code}", response)
+            return False
+        
+        # Test PDF generation
+        try:
+            url = f"{self.base_url}/invoices/{self.test_invoice_id}/pdf"
+            headers = {"Authorization": f"Bearer {self.access_token}"}
+            
+            response = requests.get(url, headers=headers, timeout=30)
+            
+            if response.status_code == 200:
+                content_type = response.headers.get('content-type', '')
+                content_length = len(response.content)
+                
+                if 'application/pdf' in content_type and content_length > 1000:
+                    self.log_test("PDF Generation", True, f"PDF generated successfully ({content_length} bytes)")
+                else:
+                    self.log_test("PDF Generation", False, f"Invalid PDF. Content-Type: {content_type}, Size: {content_length}")
+            else:
+                self.log_test("PDF Generation", False, f"HTTP {response.status_code}: {response.text}")
+        
+        except Exception as e:
+            self.log_test("PDF Generation", False, f"Exception: {str(e)}")
+        
+        return True
+    
+    def test_reminder_system(self):
+        """Test Phase 2 - Automated Reminder System"""
+        print("🔔 Testing Reminder System...")
+        
+        if not self.test_invoice_id:
+            self.log_test("Reminder System Setup", False, "No test invoice available")
+            return False
+        
+        # Test 1: Send manual reminder
+        success, response, status_code = self.make_request("POST", f"/invoices/{self.test_invoice_id}/reminders")
+        
+        if success and "reminder_type" in response:
+            self.log_test("Manual Reminder", True, f"Reminder sent: {response.get('reminder_type')}")
+        else:
+            self.log_test("Manual Reminder", False, f"Status: {status_code}", response)
+        
+        # Test 2: Get reminder history
+        success, response, status_code = self.make_request("GET", f"/invoices/{self.test_invoice_id}/reminders")
+        
+        if success and isinstance(response, list):
+            self.log_test("Reminder History", True, f"Retrieved {len(response)} reminders")
+        else:
+            self.log_test("Reminder History", False, f"Status: {status_code}", response)
+        
+        # Test 3: Send second reminder (should escalate to firm)
+        success, response, status_code = self.make_request("POST", f"/invoices/{self.test_invoice_id}/reminders")
+        
+        if success and response.get("reminder_type") == "firm":
+            self.log_test("Reminder Escalation", True, "Second reminder correctly escalated to 'firm'")
+        else:
+            self.log_test("Reminder Escalation", False, f"Expected 'firm', got: {response}")
+        
+        # Test 4: Auto-reminder processing
+        success, response, status_code = self.make_request("POST", "/mock/auto-reminders")
+        
+        if success and "message" in response:
+            self.log_test("Auto Reminders", True, f"Auto-reminders processed: {response.get('message')}")
+        else:
+            self.log_test("Auto Reminders", False, f"Status: {status_code}", response)
+        
+        return True
+    
+    def test_notification_system(self):
+        """Test Phase 2 - Notification System"""
+        print("🔔 Testing Notification System...")
+        
+        # Test 1: Schedule mock notifications
+        success, response, status_code = self.make_request("POST", "/mock/schedule-notifications")
+        
+        if success and "notifications" in response.get("message", ""):
+            self.log_test("Schedule Notifications", True, f"Notifications scheduled: {response.get('message')}")
+        else:
+            self.log_test("Schedule Notifications", False, f"Status: {status_code}", response)
+        
+        # Test 2: Get notifications list
+        success, response, status_code = self.make_request("GET", "/notifications")
+        
+        if success and isinstance(response, list):
+            self.log_test("Get Notifications", True, f"Retrieved {len(response)} notifications")
+            if len(response) > 0:
+                self.test_notification_id = response[0]["id"]
+        else:
+            self.log_test("Get Notifications", False, f"Status: {status_code}", response)
+        
+        # Test 3: Mark notification as read
+        if self.test_notification_id:
+            success, response, status_code = self.make_request("POST", f"/notifications/{self.test_notification_id}/read")
+            
+            if success and "message" in response:
+                self.log_test("Mark Notification Read", True, "Notification marked as read")
+            else:
+                self.log_test("Mark Notification Read", False, f"Status: {status_code}", response)
+        else:
+            self.log_test("Mark Notification Read", False, "No notification ID available")
+        
+        return True
+    
     def test_invoice_creation(self):
         """Test invoice creation"""
         print("🧾 Testing Invoice Management...")
