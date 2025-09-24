@@ -24,6 +24,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:8001';
 
+// Log API configuration at startup
+console.log('🔧 API Configuration:');
+console.log('  - EXPO_PUBLIC_BACKEND_URL:', process.env.EXPO_PUBLIC_BACKEND_URL);
+console.log('  - Resolved API_URL:', API_URL);
+console.log('  - Environment:', __DEV__ ? 'Development' : 'Production');
+
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
