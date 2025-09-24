@@ -78,6 +78,7 @@ export default function MainNavigator() {
       dashboard: focused ? 'analytics' : 'analytics-outline',
       invoices: focused ? 'document-text' : 'document-text-outline', 
       clients: focused ? 'people' : 'people-outline',
+      notifications: focused ? 'notifications' : 'notifications-outline',
       profile: focused ? 'person' : 'person-outline',
     };
     return iconMap[tabName] as keyof typeof Ionicons.glyphMap;
