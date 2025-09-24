@@ -32,40 +32,49 @@ export default function CreateInvoiceScreen({ navigation }: any) {
   };
 
   const validateForm = () => {
+    console.log('📝 Validation du formulaire:', formData);
+    
     const { clientName, clientEmail, clientAddress, description, amountHT } = formData;
     
     if (!clientName.trim()) {
       Alert.alert('Erreur', 'Le nom du client est requis');
+      console.log('❌ Validation failed: clientName empty');
       return false;
     }
     
     if (!clientEmail.trim()) {
       Alert.alert('Erreur', 'L\'email du client est requis');
+      console.log('❌ Validation failed: clientEmail empty');
       return false;
     }
     
     if (!clientAddress.trim()) {
       Alert.alert('Erreur', 'L\'adresse du client est requise');
+      console.log('❌ Validation failed: clientAddress empty');
       return false;
     }
     
     if (!description.trim()) {
       Alert.alert('Erreur', 'La description de la prestation est requise');
+      console.log('❌ Validation failed: description empty');
       return false;
     }
     
     const amount = parseFloat(amountHT);
     if (!amountHT.trim() || isNaN(amount) || amount <= 0) {
       Alert.alert('Erreur', 'Le montant HT doit être un nombre positif');
+      console.log('❌ Validation failed: amountHT invalid:', amountHT);
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(clientEmail)) {
       Alert.alert('Erreur', 'L\'adresse email n\'est pas valide');
+      console.log('❌ Validation failed: clientEmail invalid format');
       return false;
     }
     
+    console.log('✅ Validation passed');
     return true;
   };
 
