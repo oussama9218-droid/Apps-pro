@@ -79,7 +79,12 @@ export default function CreateInvoiceScreen({ navigation }: any) {
   };
 
   const handleCreateInvoice = async () => {
-    if (!validateForm()) return;
+    console.log('🚀 Tentative de création de facture...');
+    
+    if (!validateForm()) {
+      console.log('❌ Validation échouée, arrêt de la création');
+      return;
+    }
 
     setLoading(true);
     
@@ -92,6 +97,8 @@ export default function CreateInvoiceScreen({ navigation }: any) {
         amount_ht: parseFloat(formData.amountHT),
       };
 
+      console.log('📤 Envoi des données facture:', invoiceData);
+
       const response = await fetch(`${API_URL}/api/invoices`, {
         method: 'POST',
         headers: {
@@ -101,12 +108,16 @@ export default function CreateInvoiceScreen({ navigation }: any) {
         body: JSON.stringify(invoiceData),
       });
 
+      console.log('📥 Réponse serveur:', response.status, response.statusText);
+
       if (!response.ok) {
         const error = await response.json();
+        console.log('❌ Erreur serveur:', error);
         throw new Error(error.detail || 'Erreur lors de la création de la facture');
       }
 
       const newInvoice = await response.json();
+      console.log('✅ Facture créée avec succès:', newInvoice);
       
       Alert.alert(
         'Facture créée ! ✅',
@@ -130,6 +141,7 @@ export default function CreateInvoiceScreen({ navigation }: any) {
       );
 
     } catch (error: any) {
+      console.log('❌ Erreur lors de la création:', error);
       Alert.alert('Erreur', error.message);
     } finally {
       setLoading(false);
