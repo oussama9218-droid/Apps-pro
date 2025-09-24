@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     // Active tab styling can be added here if needed
   },
   tabLabel: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#8E8E93',
     marginTop: 4,
   },
