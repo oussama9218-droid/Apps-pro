@@ -17,6 +17,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   loading: boolean;
   checkAuthState: () => Promise<void>;
+  isOnline: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,28 +28,62 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(true);
+
+  const handleApiError = (error: any) => {
+    console.error('API Error:', error);
+    if (error.message?.includes('Network')) {
+      setIsOnline(false);
+      throw new Error('Vérifiez votre connexion internet');
+    }
+    if (error.status === 401) {
+      logout();
+      throw new Error('Session expirée, veuillez vous reconnecter');
+    }
+    throw error;
+  };
+
+  const apiCall = async (url: string, options: RequestInit = {}) => {
+    try {
+      setIsOnline(true);
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+        timeout: 10000, // 10 second timeout
+      } as RequestInit);
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ detail: 'Erreur réseau' }));
+        const apiError = new Error(error.detail || 'Erreur serveur');
+        (apiError as any).status = response.status;
+        throw apiError;
+      }
+
+      return response.json();
+    } catch (error: any) {
+      if (error.name === 'TypeError' && error.message === 'Network request failed') {
+        setIsOnline(false);
+        throw new Error('Impossible de contacter le serveur. Vérifiez votre connexion internet.');
+      }
+      throw handleApiError(error);
+    }
+  };
 
   const checkAuthState = async () => {
     try {
       const savedToken = await AsyncStorage.getItem('auth_token');
       if (savedToken) {
-        const response = await fetch(`${API_URL}/api/auth/me`, {
-          headers: {
-            'Authorization': `Bearer ${savedToken}`,
-            'Content-Type': 'application/json',
-          },
+        const userData = await apiCall(`${API_URL}/api/auth/me`, {
+          headers: { 'Authorization': `Bearer ${savedToken}` },
         });
-        
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-          setToken(savedToken);
-        } else {
-          await AsyncStorage.removeItem('auth_token');
-        }
+        setUser(userData);
+        setToken(savedToken);
       }
     } catch (error) {
-      console.error('Error checking auth state:', error);
+      console.error('Auth check failed:', error);
       await AsyncStorage.removeItem('auth_token');
     } finally {
       setLoading(false);
@@ -56,58 +91,30 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, password: string) => {
-    try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    const data = await apiCall(`${API_URL}/api/auth/login`, {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Erreur de connexion');
-      }
-
-      const data = await response.json();
-      setUser(data.user);
-      setToken(data.access_token);
-      await AsyncStorage.setItem('auth_token', data.access_token);
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
-    }
+    setUser(data.user);
+    setToken(data.access_token);
+    await AsyncStorage.setItem('auth_token', data.access_token);
   };
 
   const register = async (email: string, password: string, firstName: string, lastName: string) => {
-    try {
-      const response = await fetch(`${API_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          first_name: firstName,
-          last_name: lastName,
-        }),
-      });
+    const data = await apiCall(`${API_URL}/api/auth/register`, {
+      method: 'POST',
+      body: JSON.stringify({
+        email,
+        password,
+        first_name: firstName,
+        last_name: lastName,
+      }),
+    });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Erreur lors de l\'inscription');
-      }
-
-      const data = await response.json();
-      setUser(data.user);
-      setToken(data.access_token);
-      await AsyncStorage.setItem('auth_token', data.access_token);
-    } catch (error) {
-      console.error('Register error:', error);
-      throw error;
-    }
+    setUser(data.user);
+    setToken(data.access_token);
+    await AsyncStorage.setItem('auth_token', data.access_token);
   };
 
   const logout = async () => {
@@ -134,6 +141,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         loading,
         checkAuthState,
+        isOnline,
       }}
     >
       {children}
