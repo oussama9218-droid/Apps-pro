@@ -101,3 +101,160 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+## user_problem_statement: "Créer un MVP mobile-first pour une app destinée aux micro-entrepreneurs et freelances en France. Aider à gérer obligations fiscales/sociales (URSSAF, TVA, seuils). Centraliser facturation simple + relances automatiques + rappels d'échéances."
+
+## backend:
+  - task: "Authentication System (JWT)"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented JWT authentication with user registration, login, and token verification. Ready for testing."
+
+  - task: "User Profile Management"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented profile creation and update with fiscal information (BIC/BNC, URSSAF periodicity, VAT regime, thresholds). Ready for testing."
+
+  - task: "Invoice Management"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented invoice creation, listing, and status updates with automatic numbering and VAT calculations. Ready for testing."
+
+  - task: "Dashboard API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented dashboard with revenue tracking, threshold percentages, obligations, and mock bank transactions. Ready for testing."
+
+  - task: "Mock Obligations System"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented mock URSSAF and VAT obligations initialization based on user profile. Ready for testing."
+
+## frontend:
+  - task: "Authentication Screens"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/app/screens/auth/"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented login and registration screens with form validation and error handling. Not tested yet - will test after backend validation."
+
+  - task: "Onboarding Flow"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/app/screens/onboarding/"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented complete onboarding flow: welcome, activity type, URSSAF periodicity, VAT regime, and thresholds configuration. Not tested yet."
+
+  - task: "Dashboard Screen"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/app/screens/main/DashboardScreen.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented dashboard with revenue summary, threshold progress bars, obligations list, and mock transactions. Not tested yet."
+
+  - task: "Invoice Management"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/app/screens/main/"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented invoice listing and creation screens with form validation and status management. Not tested yet."
+
+  - task: "Profile Screen"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/app/screens/main/ProfileScreen.tsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented profile screen showing user info, fiscal configuration, and app settings. Not tested yet."
+
+  - task: "Navigation Setup"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/app/navigation/Navigation.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented navigation with auth flow, onboarding flow, and main tabs. Includes authentication context. Not tested yet."
+
+## metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+## test_plan:
+  current_focus:
+    - "Authentication System (JWT)"
+    - "User Profile Management" 
+    - "Invoice Management"
+    - "Dashboard API"
+    - "Mock Obligations System"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+## agent_communication:
+    - agent: "main"
+    - message: "Completed implementation of Pilotage Micro MVP with full backend API and frontend mobile app. Backend includes JWT auth, profile management, invoice system, dashboard with threshold tracking, and mock obligations. Frontend includes complete onboarding flow, dashboard, invoicing, and profile screens. All backend endpoints ready for testing. Frontend will be tested after backend validation."
