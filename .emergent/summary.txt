@@ -1,0 +1,100 @@
+<analysis>
+The AI engineer successfully built a mobile-first MVP application, Pilotage Micro, for French micro-entrepreneurs using Expo (React Native) for the frontend and FastAPI with MongoDB for the backend. The development progressed through several key phases: initial setup, implementing core features (onboarding, dashboard, invoicing, profile), and addressing significant navigation challenges by shifting from  to 's file-based routing and a state-driven navigator. The MVP achieved full functionality for user authentication and the complete onboarding flow, culminating in a tab-based navigation for main sections. After successful backend and frontend tests, the project moved into preparing for a beta launch, focusing on application stabilization, error handling, loading states, and comprehensive deployment documentation. Currently, the engineer is actively developing Phase 2 features, including client management, PDF invoice export, automated reminders, and local push notifications, having already updated backend models and introduced a new Clients screen.
+</analysis>
+
+<product_requirements>
+The goal is to create a mobile-first MVP application for French micro-entrepreneurs and freelancers to manage tax/social obligations (URSSAF, TVA, thresholds), centralize invoicing, automate reminders, and provide a real-time compliance dashboard.
+
+**MVP Functionalities:**
+1.  **Onboarding fiscal**: Choice of activity (BIC/BNC), URSSAF periodicity, TVA regime, CA thresholds initialization.
+2.  **Sync bancaire (mock/simulation)**: Aggregation of income, automatic calculation of % threshold reached. Integration with PSD2 APIs is planned for later.
+3.  **Facturation simple**: PDF invoice creation with legal mentions (e.g., Art. 293 B CGI), auto-numbering, status tracking (sent, paid, overdue).
+4.  **Tableau de bord conformité**: Gauge for micro/TVA threshold attainment, list of upcoming obligations, dynamic to-do checklists.
+5.  **Rappels & Checklists**: Local push notifications (J-7, J-3, J0 for URSSAF/TVA), interactive checklists. Firebase push is planned later.
+6.  **Relances impayés**: Automated email reminders (J+7 gentle, J+14 firm) with PDF invoice attached.
+
+**Monetization**: Free (unlimited invoices, basic URSSAF reminders), Pro (12€/month - bank sync, TVA alerts, client reminders, compliance checklist), Premium (24€/month - all Pro features + accounting integrations + human support).
+
+**Technical Constraints**: Mobile-first (Expo React Native), lightweight backend (FastAPI), secure/RGPD compliant storage (MongoDB), mock data for banking/notifications initially, Stripe integration for subscriptions. Frontend uses  for navigation.
+
+**Current State of Product Build**:
+The application has a fully functional backend and a frontend with complete user authentication (JWT), a four-step fiscal onboarding process, a dashboard displaying threshold calculations and simulated transactions, basic invoicing, and a profile screen. Crucially, a robust tab-based navigation (Dashboard, Invoices, Profile) has been implemented and validated. The app includes basic loading spinners and error boundaries for improved UX and is prepared for beta testing. It is currently being upgraded with Phase 2 features including client management, PDF invoice export, automated reminders, and local push notifications.
+</product_requirements>
+
+<key_technical_concepts>
+-   **Expo Router**: File-based navigation for the mobile frontend.
+-   **React Native**: Core framework for mobile UI development.
+-   **FastAPI**: Python-based backend API framework.
+-   **MongoDB**: NoSQL database for data persistence.
+-   **JWT Authentication**: Standard for user authentication and authorization.
+-   **Mocks**: Simulated banking data and local push notifications for early MVP testing.
+-   **Zustand**: State management (implied, mentioned in system prompt but not explicitly used in trajectory for complex state).
+-   **Pillow, ReportLab**: Python libraries for image processing and PDF generation (backend).
+</key_technical_concepts>
+
+<code_architecture>
+The application follows a standard full-stack architecture with a distinct frontend (Expo React Native) and backend (FastAPI with MongoDB).
+
+**Detailed Directory Structure:**
+
+
+
+-   **/app/backend/server.py**:
+    -   **Importance**: This is the core FastAPI backend, handling all API logic and database interactions.
+    -   **Changes**: Initially set up with basic authentication endpoints (register, login). Later expanded to include logic for user management, onboarding data storage, invoice creation. In Phase 2, new MongoDB models (, ) and API endpoints for client management were added. Attempts were made to include logic for reminders and notifications, but faced  import issues. It also installed  and  for PDF generation capabilities.
+-   **/app/frontend/app/index.tsx**:
+    -   **Importance**: The entry point for the Expo Router frontend application.
+    -   **Changes**: Configured to wrap the main application with  and  for global state and error handling. It's the root of the Expo Router navigation tree.
+-   **/app/frontend/app/_layout.tsx**:
+    -   **Importance**: Defines the global navigation structure for Expo Router.
+    -   **Changes**: Initially attempted to use  from  within it, leading to nested  errors. Later simplified to solely use  from  for file-based navigation, effectively routing based on  logic.
+-   **/app/frontend/app/contexts/AuthContext.tsx**:
+    -   **Importance**: Manages user authentication state (login, logout, token persistence) across the application.
+    -   **Changes**: Implemented  for JWT token persistence, providing  state and / functions. Later improved with error handling and loading states.
+-   **/app/frontend/app/components/AppNavigator.tsx**:
+    -   **Importance**: Serves as the high-level navigator, conditionally rendering the Authentication flow, Onboarding flow, or the Main application (tab navigation) based on the user's authentication and onboarding status.
+    -   **Changes**: Created to abstract navigation logic. Initially directed to  or  or .
+-   **/app/frontend/app/components/OnboardingFlow.tsx**:
+    -   **Importance**: Orchestrates the multi-step fiscal onboarding process.
+    -   **Changes**: Created to encapsulate the sequence of onboarding screens and manage the progression logic using internal state and callbacks, replacing direct navigation props.
+-   **/app/frontend/app/components/MainNavigator.tsx**:
+    -   **Importance**: Provides the primary tab-based navigation for logged-in users to access Dashboard, Invoices, and Profile sections.
+    -   **Changes**: Created using  to manage tab navigation. Recently updated to include a Clients tab as part of Phase 2 development.
+-   **/app/frontend/app/screens/** (auth, main, onboarding folders):
+    -   **Importance**: Contains all the individual UI screens for authentication, main application features, and the onboarding process.
+    -   **Changes**: Numerous files created (, , , , , , and several  screens). Most were updated to remove direct navigation props and instead rely on state or context for transitions, especially within the  and for the .  was updated to display the app version and a feedback link.  was newly created for Phase 2.
+-   **/app/frontend/app/components/LoadingSpinner.tsx & ErrorBoundary.tsx**:
+    -   **Importance**: Generic components for improving user experience by indicating loading states and gracefully handling UI errors.
+    -   **Changes**: Newly created as part of the stabilization phase before MVP launch.
+-   **/app/*.md files**:
+    -   **Importance**: Documentation and guides for MVP launch and beta testing.
+    -   **Changes**: , , , , , and  were created to support the beta launch and provide instructions.
+</code_architecture>
+
+<pending_tasks>
+-   **Phase 2 - Relances automatiques**: Implement automated email reminders (J+7 gentle, J+14 firm) for unpaid invoices, including historical tracking and status updates.
+-   **Phase 2 - Notifications push locales**: Implement local push notifications for URSSAF reminders (J-7, J-3, J0), TVA threshold alerts, and invoice reminders.
+-   **Phase 2 - Export PDF des factures**: Implement backend generation of PDF invoices with legal mentions and inviolable numbering, saving to local/cloud.
+-   **Backend error resolution**: Resolve persistent  import issues in the backend  code.
+-   **Frontend - Notifications Screen**: Create the UI for managing notifications and reminders.
+</pending_tasks>
+
+<current_work>
+Immediately before this summary request, the AI engineer was actively working on implementing Phase 2 features as requested by the user. This phase focuses on advanced functionalities: automated reminders, local push notifications, PDF invoice export, and recurrent client management.
+
+The work is currently progressing on the backend by:
+-   Installing necessary Python dependencies:  and  for PDF generation.
+-   Defining new MongoDB models in  for  and  entities.
+-   Adding corresponding API endpoints in  for managing clients (e.g., creating, retrieving, updating clients).
+-   Attempting to integrate logic for reminders and notifications into the backend, although encountering persistent  import errors that need further resolution.
+
+Concurrently, on the frontend:
+-   A new screen, , has been created to manage the client list and related interactions.
+-   The main tab-based navigation () has been updated to include a new Clients tab, making the new screen accessible within the primary application flow.
+
+The engineer's last action was to prepare for creating a notifications screen on the frontend, indicating the next UI component to be developed for the reminder/notification functionality. The backend is currently in a state where new models and basic client endpoints are present, but error handling for email-related imports is still pending.
+</current_work>
+
+<optional_next_step>
+Create the frontend Notifications Screen, corresponding to the Notifications push locales Phase 2 feature.
+</optional_next_step>
