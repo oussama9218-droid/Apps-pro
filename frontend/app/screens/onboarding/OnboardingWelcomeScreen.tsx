@@ -56,7 +56,7 @@ export default function OnboardingWelcomeScreen({ onNext }: { onNext: () => void
         <View style={styles.footer}>
           <TouchableOpacity
             style={styles.startButton}
-            onPress={() => navigation.navigate('OnboardingActivity')}
+            onPress={onNext}
           >
             <Text style={styles.startButtonText}>Commencer la configuration</Text>
             <Ionicons name="arrow-forward" size={20} color="#fff" />
