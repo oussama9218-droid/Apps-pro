@@ -197,39 +197,48 @@
 
   - task: "Phase 2 - PDF Invoice Export"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "✅ IMPLEMENTED: PDF invoice generation with ReportLab. Features: French legal mentions (Art. 293 B CGI), professional layout, VAT calculations, automatic numbering, client info integration. Endpoint /api/invoices/{id}/pdf for PDF download. Ready for testing."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTED: PDF invoice export fully functional. Both tests passed (100% success rate). Invoice creation for PDF works correctly with client integration, PDF generation successfully creates valid PDF files (2484 bytes) with proper content-type (application/pdf). French legal mentions, professional layout, and VAT calculations all working as expected."
 
   - task: "Phase 2 - Automated Reminder System"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "✅ IMPLEMENTED: Automated invoice reminder system with J+7 gentle, J+14 firm reminders. Features: reminder tracking, status updates, email scheduling (mocked), auto-reminder processing. API endpoints for manual and automatic reminder sending. Ready for testing."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTED: Automated reminder system fully operational. All 4 tests passed (100% success rate). Manual reminder sending works with proper escalation (gentle → firm), reminder history retrieval functions correctly, reminder escalation logic works as expected, auto-reminder processing endpoint functional. Email and push notification sending properly mocked."
 
   - task: "Phase 2 - Notification System Backend"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "✅ IMPLEMENTED: Complete notification system backend with MongoDB models, API endpoints for notification management, URSSAF reminders scheduling, VAT threshold alerts, and mock notification generation. Features read/unread tracking and local push notification support. Ready for testing."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTED: Notification system backend fully functional. All 3 tests passed (100% success rate). Mock notification scheduling works correctly (created 3 URSSAF and VAT notifications), notification retrieval returns proper list of notifications, mark-as-read functionality works correctly. URSSAF reminders (J-7, J-3, J0) and VAT threshold alerts properly implemented."
 
 ## frontend:
   - task: "Authentication Screens"
