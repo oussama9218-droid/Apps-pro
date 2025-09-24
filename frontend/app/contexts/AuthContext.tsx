@@ -39,12 +39,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [isOnline, setIsOnline] = useState(true);
 
   const handleApiError = (error: any) => {
-    console.error('API Error:', error);
+    console.error('🚨 API Error:', error);
     if (error.message?.includes('Network')) {
       setIsOnline(false);
       throw new Error('Vérifiez votre connexion internet');
     }
     if (error.status === 401) {
+      console.log('🔓 Token expired - logging out user');
       logout();
       throw new Error('Session expirée, veuillez vous reconnecter');
     }
@@ -52,6 +53,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const apiCall = async (url: string, options: RequestInit = {}) => {
+    console.log('📡 API Call:', url);
     try {
       setIsOnline(true);
       const response = await fetch(url, {
@@ -62,6 +64,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         },
         timeout: 10000, // 10 second timeout
       } as RequestInit);
+
+      console.log('📡 Response:', response.status, response.statusText);
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ detail: 'Erreur réseau' }));
@@ -80,19 +84,32 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const refreshToken = async () => {
+    console.log('🔄 Refreshing authentication state...');
+    await checkAuthState();
+  };
+
   const checkAuthState = async () => {
+    console.log('🔍 Checking authentication state...');
     try {
       const savedToken = await AsyncStorage.getItem('auth_token');
+      console.log('💾 Saved token exists:', !!savedToken);
+      
       if (savedToken) {
         const userData = await apiCall(`${API_URL}/api/auth/me`, {
           headers: { 'Authorization': `Bearer ${savedToken}` },
         });
+        console.log('✅ Authentication valid for user:', userData.email);
         setUser(userData);
         setToken(savedToken);
+      } else {
+        console.log('❌ No saved token found');
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      console.error('❌ Auth check failed:', error);
       await AsyncStorage.removeItem('auth_token');
+      setUser(null);
+      setToken(null);
     } finally {
       setLoading(false);
     }
