@@ -113,8 +113,44 @@ export default function InvoicesScreen({ navigation }: any) {
     }
   };
 
+  const downloadInvoicePDF = async (invoiceId: string, invoiceNumber: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/invoices/${invoiceId}/pdf`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        
+        // For mobile, show success message instead of browser download
+        Alert.alert(
+          'PDF généré ! ✅',
+          `Le PDF de la facture ${invoiceNumber} a été généré avec succès.\n\nDans une vraie app mobile, le PDF serait téléchargé dans le dossier Téléchargements.`,
+          [{ text: 'OK' }]
+        );
+        
+        // Clean up the blob URL
+        URL.revokeObjectURL(url);
+      } else {
+        throw new Error('Erreur lors de la génération du PDF');
+      }
+    } catch (error: any) {
+      console.error('PDF download error:', error);
+      Alert.alert('Erreur', error.message);
+    }
+  };
+
   const handleInvoiceAction = (invoice: Invoice) => {
     const actions = [];
+
+    // Always add PDF download option
+    actions.push({
+      text: '📄 Télécharger PDF',
+      onPress: () => downloadInvoicePDF(invoice.id, invoice.invoice_number)
+    });
 
     if (invoice.status === 'draft') {
       actions.push(
