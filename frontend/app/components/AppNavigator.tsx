@@ -5,8 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 // Auth Screens
 import LoginScreen from '../screens/auth/LoginScreen';
 
-// Onboarding Screens  
-import OnboardingWelcomeScreen from '../screens/onboarding/OnboardingWelcomeScreen';
+// Onboarding Flow
+import OnboardingFlow from './OnboardingFlow';
 
 // Main App Screen
 import DashboardScreen from '../screens/main/DashboardScreen';
@@ -29,7 +29,7 @@ export default function AppNavigator() {
 
   // Show onboarding if not onboarded
   if (!user.is_onboarded) {
-    return <OnboardingWelcomeScreen />;
+    return <OnboardingFlow />;
   }
 
   // Show main dashboard
