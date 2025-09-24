@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,6 +22,9 @@ interface UserProfile {
   vat_threshold: number;
   previous_year_turnover?: number;
 }
+
+const APP_VERSION = '1.0.0-beta';
+const FEEDBACK_URL = 'https://forms.gle/PilotageM1croFeedback'; // À remplacer par vraie URL
 
 export default function ProfileScreen() {
   const { user, logout, token } = useAuth();
@@ -60,6 +64,24 @@ export default function ProfileScreen() {
       [
         { text: 'Annuler', style: 'cancel' },
         { text: 'Déconnexion', onPress: logout, style: 'destructive' }
+      ]
+    );
+  };
+
+  const handleFeedback = () => {
+    Alert.alert(
+      'Feedback Testeur 📝',
+      'Votre avis est précieux ! Aidez-nous à améliorer Pilotage Micro.',
+      [
+        { text: 'Plus tard', style: 'cancel' },
+        { 
+          text: 'Donner mon avis', 
+          onPress: () => {
+            Linking.openURL(FEEDBACK_URL).catch(() => {
+              Alert.alert('Erreur', 'Impossible d\'ouvrir le formulaire de feedback');
+            });
+          }
+        }
       ]
     );
   };
@@ -108,7 +130,24 @@ export default function ProfileScreen() {
               </Text>
               <Text style={styles.userEmail}>{user?.email}</Text>
             </View>
+            <View style={styles.betaBadge}>
+              <Text style={styles.betaText}>BÊTA</Text>
+            </View>
           </View>
+        </View>
+
+        {/* Beta Feedback Banner */}
+        <View style={styles.feedbackBanner}>
+          <Ionicons name="megaphone" size={24} color="#FF9500" />
+          <View style={styles.feedbackContent}>
+            <Text style={styles.feedbackTitle}>Version bêta - Votre avis compte !</Text>
+            <Text style={styles.feedbackText}>
+              Aidez-nous à améliorer l'app en partageant vos retours
+            </Text>
+          </View>
+          <TouchableOpacity style={styles.feedbackButton} onPress={handleFeedback}>
+            <Text style={styles.feedbackButtonText}>Feedback</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Fiscal Profile */}
@@ -164,7 +203,12 @@ export default function ProfileScreen() {
           
           <View style={styles.profileItem}>
             <Text style={styles.profileLabel}>Version de l'application</Text>
-            <Text style={styles.profileValue}>1.0.0 (MVP)</Text>
+            <Text style={styles.profileValue}>{APP_VERSION}</Text>
+          </View>
+
+          <View style={styles.profileItem}>
+            <Text style={styles.profileLabel}>Statut</Text>
+            <Text style={[styles.profileValue, styles.betaStatus]}>Version bêta - Tests</Text>
           </View>
 
           <View style={styles.profileItem}>
@@ -177,6 +221,12 @@ export default function ProfileScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>⚙️ Actions</Text>
           
+          <TouchableOpacity style={styles.actionButton} onPress={handleFeedback}>
+            <Ionicons name="chat-bubble-ellipses-outline" size={24} color="#007AFF" />
+            <Text style={styles.actionButtonText}>Donner son feedback (testeur)</Text>
+            <Ionicons name="chevron-forward" size={20} color="#666" />
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.actionButton}>
             <Ionicons name="settings-outline" size={24} color="#007AFF" />
             <Text style={styles.actionButtonText}>Modifier le profil fiscal</Text>
@@ -221,8 +271,9 @@ export default function ProfileScreen() {
             Pilotage Micro - Simplifiez vos obligations fiscales
           </Text>
           <Text style={styles.footerSubtext}>
-            Développé avec ❤️ pour les micro-entrepreneurs français
+            Version bêta - Développé avec ❤️ pour les micro-entrepreneurs français
           </Text>
+          <Text style={styles.footerVersion}>v{APP_VERSION}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
