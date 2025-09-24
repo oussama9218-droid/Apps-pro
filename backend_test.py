@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Pilotage Micro MVP
-Tests all backend endpoints for the French micro-entrepreneur management app
+Backend API Testing for Pilotage Micro MVP - Phase 2
+Tests all backend endpoints including new Phase 2 features:
+- Client Management System
+- PDF Invoice Export  
+- Automated Reminder System
+- Notification System
 """
 
 import requests
@@ -13,6 +17,8 @@ from typing import Dict, Any, Optional
 # Configuration
 BASE_URL = "https://compliance-dash-3.preview.emergentagent.com/api"
 HEADERS = {"Content-Type": "application/json"}
+TEST_USER_EMAIL = "marie@test.com"
+TEST_USER_PASSWORD = "password123"
 
 class PilotageAPITester:
     def __init__(self):
