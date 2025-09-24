@@ -542,7 +542,10 @@ const styles = StyleSheet.create({
   },
   form: {
     flex: 1,
+  },
+  formContent: {
     padding: 16,
+    flexGrow: 1,
   },
   inputGroup: {
     marginBottom: 20,
