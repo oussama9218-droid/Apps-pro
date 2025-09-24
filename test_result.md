@@ -354,14 +354,15 @@
 
 ## test_plan:
   current_focus:
+    - "Phase 2 - Client Management System"
+    - "Phase 2 - PDF Invoice Export"
+    - "Phase 2 - Automated Reminder System"
+    - "Phase 2 - Notification System Backend"
+    - "Phase 2 - Client Management Frontend"
+    - "Phase 2 - Notifications Screen"
     - "Navigation Setup"
-    - "Authentication Screens"
-    - "Onboarding Flow"
-    - "Dashboard Screen"
-    - "Invoice Management"
-    - "Profile Screen"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 ## agent_communication:
