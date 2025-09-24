@@ -103,7 +103,7 @@ export default function MainNavigator() {
       
       {/* Bottom Tab Navigation */}
       <View style={styles.tabBar}>
-        {(['dashboard', 'invoices', 'clients', 'profile'] as TabName[]).map((tab) => {
+        {(['dashboard', 'invoices', 'clients', 'notifications', 'profile'] as TabName[]).map((tab) => {
           const isActive = activeTab === tab;
           return (
             <TouchableOpacity
