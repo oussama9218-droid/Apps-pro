@@ -18,6 +18,8 @@ interface AuthContextType {
   loading: boolean;
   checkAuthState: () => Promise<void>;
   isOnline: boolean;
+  refreshToken: () => Promise<void>;
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
