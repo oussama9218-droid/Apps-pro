@@ -335,6 +335,54 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 4,
   },
+  betaBadge: {
+    backgroundColor: '#FF9500',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  betaText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  feedbackBanner: {
+    backgroundColor: '#FFF3E0',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF9500',
+  },
+  feedbackContent: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  feedbackTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FF9500',
+    marginBottom: 4,
+  },
+  feedbackText: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 18,
+  },
+  feedbackButton: {
+    backgroundColor: '#FF9500',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginLeft: 12,
+  },
+  feedbackButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
@@ -353,6 +401,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#1a1a1a',
+  },
+  betaStatus: {
+    color: '#FF9500',
   },
   divider: {
     height: 1,
@@ -393,5 +444,11 @@ const styles = StyleSheet.create({
     color: '#999',
     textAlign: 'center',
     marginTop: 8,
+  },
+  footerVersion: {
+    fontSize: 12,
+    color: '#ccc',
+    textAlign: 'center',
+    marginTop: 4,
   },
 });
