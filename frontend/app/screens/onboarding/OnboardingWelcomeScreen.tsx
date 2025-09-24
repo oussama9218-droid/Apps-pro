@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
 
-export default function OnboardingWelcomeScreen({ navigation }: any) {
+export default function OnboardingWelcomeScreen({ onNext }: { onNext: () => void }) {
   const { user } = useAuth();
 
   return (
