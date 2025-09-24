@@ -8,9 +8,10 @@ import DashboardScreen from '../screens/main/DashboardScreen';
 import InvoicesScreen from '../screens/main/InvoicesScreen';
 import CreateInvoiceScreen from '../screens/main/CreateInvoiceScreen';
 import ClientsScreen from '../screens/main/ClientsScreen';
+import NotificationsScreen from '../screens/main/NotificationsScreen';
 import ProfileScreen from '../screens/main/ProfileScreen';
 
-type TabName = 'dashboard' | 'invoices' | 'clients' | 'profile';
+type TabName = 'dashboard' | 'invoices' | 'clients' | 'notifications' | 'profile';
 type InvoiceScreen = 'list' | 'create';
 
 export default function MainNavigator() {
