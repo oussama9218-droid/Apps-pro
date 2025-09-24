@@ -122,15 +122,18 @@
 
   - task: "User Profile Management"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Implemented profile creation and update with fiscal information (BIC/BNC, URSSAF periodicity, VAT regime, thresholds). Ready for testing."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTED: Profile management fully functional. Profile creation works with all fiscal configurations (BIC/BNC, URSSAF periodicity, VAT regimes, thresholds). Profile retrieval and updates working correctly. User onboarding status properly updated."
 
   - task: "Invoice Management"
     implemented: true
