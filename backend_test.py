@@ -489,7 +489,23 @@ class PilotageAPITester:
         """Test error handling scenarios"""
         print("⚠️ Testing Error Handling...")
         
-        # Test invalid login
+        # Test 1: Invalid client ID
+        success, response, status_code = self.make_request("GET", "/clients/invalid-id")
+        
+        if not success and status_code == 404:
+            self.log_test("Invalid Client ID", True, "Correctly returned 404 for invalid client")
+        else:
+            self.log_test("Invalid Client ID", False, f"Expected 404, got {status_code}")
+        
+        # Test 2: Invalid invoice ID for PDF
+        success, response, status_code = self.make_request("GET", "/invoices/invalid-id/pdf")
+        
+        if not success and status_code == 404:
+            self.log_test("Invalid Invoice PDF", True, "Correctly returned 404 for invalid invoice PDF")
+        else:
+            self.log_test("Invalid Invoice PDF", False, f"Expected 404, got {status_code}")
+        
+        # Test 3: Invalid login
         invalid_login = {
             "email": "nonexistent@test.fr",
             "password": "wrongpassword"
@@ -502,7 +518,7 @@ class PilotageAPITester:
         else:
             self.log_test("Invalid Login Error", False, f"Expected 400 error, got {status_code}")
         
-        # Test accessing protected endpoint without token
+        # Test 4: Accessing protected endpoint without token
         temp_headers = self.headers.copy()
         self.headers = {"Content-Type": "application/json"}  # Remove auth header
         
@@ -515,6 +531,27 @@ class PilotageAPITester:
         
         # Restore headers
         self.headers = temp_headers
+        
+        # Test 5: Delete client with invoices (should fail)
+        if self.test_client_id:
+            success, response, status_code = self.make_request("DELETE", f"/clients/{self.test_client_id}")
+            
+            if not success and status_code == 400:
+                self.log_test("Delete Client with Invoices", True, "Correctly prevented deletion of client with invoices")
+            else:
+                self.log_test("Delete Client with Invoices", False, f"Should have prevented deletion. Status: {status_code}")
+    
+    def cleanup_test_data(self):
+        """Clean up test data"""
+        print("🧹 Cleaning up test data...")
+        
+        # Note: We don't clean up the client since it has invoices linked to it
+        # This is expected behavior - clients with invoices cannot be deleted
+        if self.test_client_id:
+            print(f"⚠️ Test client {self.test_client_id} left in database (has linked invoices)")
+        
+        if self.test_invoice_id:
+            print(f"⚠️ Test invoice {self.test_invoice_id} left in database")
     
     def run_all_tests(self):
         """Run all backend tests"""
