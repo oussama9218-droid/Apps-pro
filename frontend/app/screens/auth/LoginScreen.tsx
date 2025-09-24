@@ -430,6 +430,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 48,
   },
+  backButton: {
+    alignSelf: 'flex-start',
+    padding: 8,
+    marginBottom: 16,
+  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
@@ -456,6 +461,11 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  inputRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -464,6 +474,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 16,
     backgroundColor: '#f8f9fa',
+  },
+  halfInput: {
+    flex: 1,
+    marginBottom: 0,
   },
   inputIcon: {
     marginLeft: 16,
@@ -520,6 +534,33 @@ const styles = StyleSheet.create({
   registerButtonText: {
     color: '#007AFF',
     fontSize: 16,
+    fontWeight: '600',
+  },
+  registerFormButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  registerFormButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  loginPrompt: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 24,
+  },
+  loginPromptText: {
+    color: '#666',
+    fontSize: 14,
+  },
+  loginLink: {
+    color: '#007AFF',
+    fontSize: 14,
     fontWeight: '600',
   },
   footer: {
