@@ -89,6 +89,7 @@ export default function MainNavigator() {
       dashboard: 'Tableau de bord',
       invoices: 'Factures',
       clients: 'Clients',
+      notifications: 'Notifications',
       profile: 'Profil',
     };
     return labelMap[tabName];
