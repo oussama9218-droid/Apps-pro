@@ -137,15 +137,18 @@
 
   - task: "Invoice Management"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Implemented invoice creation, listing, and status updates with automatic numbering and VAT calculations. Ready for testing."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTED: Invoice management system fully operational. Invoice creation works with automatic numbering (FAC-2025-0001), VAT calculations based on user profile, invoice listing retrieves all user invoices, status updates work for all states (draft/sent/paid/overdue). Payment tracking with paid_at timestamp working correctly."
 
   - task: "Dashboard API"
     implemented: true
