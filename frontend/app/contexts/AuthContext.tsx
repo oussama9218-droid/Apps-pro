@@ -116,17 +116,20 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, password: string) => {
+    console.log('🔐 Attempting login for:', email);
     const data = await apiCall(`${API_URL}/api/auth/login`, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
 
+    console.log('✅ Login successful for:', data.user.email);
     setUser(data.user);
     setToken(data.access_token);
     await AsyncStorage.setItem('auth_token', data.access_token);
   };
 
   const register = async (email: string, password: string, firstName: string, lastName: string) => {
+    console.log('📝 Attempting registration for:', email);
     const data = await apiCall(`${API_URL}/api/auth/register`, {
       method: 'POST',
       body: JSON.stringify({
@@ -137,12 +140,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       }),
     });
 
+    console.log('✅ Registration successful for:', data.user.email);
     setUser(data.user);
     setToken(data.access_token);
     await AsyncStorage.setItem('auth_token', data.access_token);
   };
 
   const logout = async () => {
+    console.log('👋 Logging out user');
     try {
       await AsyncStorage.removeItem('auth_token');
       setUser(null);
@@ -151,6 +156,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Logout error:', error);
     }
   };
+
+  // Computed value for authentication state
+  const isAuthenticated = !loading && !!user && !!token;
 
   useEffect(() => {
     checkAuthState();
