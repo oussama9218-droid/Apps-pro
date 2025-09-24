@@ -59,4 +59,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+  },
+  offlineText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#FF3B30',
+    fontStyle: 'italic',
+  },
 });
