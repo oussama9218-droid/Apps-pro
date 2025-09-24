@@ -161,8 +161,19 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const isAuthenticated = !loading && !!user && !!token;
 
   useEffect(() => {
+    console.log('🚀 AuthProvider initializing...');
     checkAuthState();
   }, []);
+
+  // Debug auth state changes
+  useEffect(() => {
+    console.log('🔄 Auth state changed:');
+    console.log('  - Loading:', loading);
+    console.log('  - User:', user?.email || 'none');
+    console.log('  - Token:', token ? '***' + token.slice(-10) : 'none');
+    console.log('  - IsAuthenticated:', isAuthenticated);
+    console.log('  - IsOnline:', isOnline);
+  }, [loading, user, token, isAuthenticated, isOnline]);
 
   return (
     <AuthContext.Provider
@@ -174,7 +185,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         loading,
         checkAuthState,
+        refreshToken,
         isOnline,
+        isAuthenticated,
       }}
     >
       {children}
