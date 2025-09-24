@@ -14,8 +14,14 @@ import { useAuth } from '../../contexts/AuthContext';
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:8001';
 
-export default function OnboardingThresholdsScreen({ navigation, route }: any) {
-  const { activityType, urssafPeriodicity, vatRegime } = route.params;
+interface Props {
+  onBack: () => void;
+  activityType: string;
+  urssafPeriodicity: string;
+  vatRegime: string;
+}
+
+export default function OnboardingThresholdsScreen({ onBack, activityType, urssafPeriodicity, vatRegime }: Props) {
   const { token, checkAuthState } = useAuth();
   
   const [previousYearTurnover, setPreviousYearTurnover] = useState('');
@@ -96,7 +102,7 @@ export default function OnboardingThresholdsScreen({ navigation, route }: any) {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={onBack}
           >
             <Ionicons name="arrow-back" size={24} color="#007AFF" />
           </TouchableOpacity>

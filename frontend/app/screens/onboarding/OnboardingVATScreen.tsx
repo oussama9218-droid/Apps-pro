@@ -39,16 +39,18 @@ const vatOptions: VATOption[] = [
   }
 ];
 
-export default function OnboardingVATScreen({ navigation, route }: any) {
-  const { activityType, urssafPeriodicity } = route.params;
+interface Props {
+  onNext: (data: { vatRegime: string }) => void;
+  onBack: () => void;
+  activityType: string;
+  urssafPeriodicity: string;
+}
+
+export default function OnboardingVATScreen({ onNext, onBack, activityType, urssafPeriodicity }: Props) {
   const [selectedVAT, setSelectedVAT] = useState<string>('franchise');
 
   const handleContinue = () => {
-    navigation.navigate('OnboardingThresholds', {
-      activityType,
-      urssafPeriodicity,
-      vatRegime: selectedVAT
-    });
+    onNext({ vatRegime: selectedVAT });
   };
 
   return (
@@ -57,7 +59,7 @@ export default function OnboardingVATScreen({ navigation, route }: any) {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={onBack}
           >
             <Ionicons name="arrow-back" size={24} color="#007AFF" />
           </TouchableOpacity>
