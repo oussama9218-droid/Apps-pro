@@ -312,7 +312,186 @@ async def update_profile(profile_data: UserProfileCreate, user_id: str = Depends
     updated_profile = await db.profiles.find_one({"user_id": user_id})
     return UserProfile(**updated_profile)
 
-# Invoice Routes
+# Phase 2: Client Management Routes
+@api_router.post("/clients", response_model=Client)
+async def create_client(client_data: ClientCreate, user_id: str = Depends(verify_token)):
+    # Check if client with same email already exists for this user
+    existing_client = await db.clients.find_one({"user_id": user_id, "email": client_data.email})
+    if existing_client:
+        raise HTTPException(status_code=400, detail="Un client avec cet email existe déjà")
+    
+    client_dict = client_data.model_dump()
+    client_obj = Client(user_id=user_id, **client_dict)
+    
+    await db.clients.insert_one(client_obj.model_dump())
+    return client_obj
+
+@api_router.get("/clients", response_model=List[Client])
+async def get_clients(user_id: str = Depends(verify_token)):
+    clients = await db.clients.find({"user_id": user_id}).sort("name", 1).to_list(100)
+    return [Client(**client) for client in clients]
+
+@api_router.get("/clients/{client_id}", response_model=Client)
+async def get_client(client_id: str, user_id: str = Depends(verify_token)):
+    client_doc = await db.clients.find_one({"id": client_id, "user_id": user_id})
+    if not client_doc:
+        raise HTTPException(status_code=404, detail="Client non trouvé")
+    
+    return Client(**client_doc)
+
+@api_router.put("/clients/{client_id}", response_model=Client)
+async def update_client(client_id: str, client_data: ClientCreate, user_id: str = Depends(verify_token)):
+    update_dict = client_data.model_dump()
+    update_dict["updated_at"] = datetime.utcnow()
+    
+    result = await db.clients.update_one(
+        {"id": client_id, "user_id": user_id},
+        {"$set": update_dict}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Client non trouvé")
+    
+    updated_client = await db.clients.find_one({"id": client_id, "user_id": user_id})
+    return Client(**updated_client)
+
+@api_router.delete("/clients/{client_id}")
+async def delete_client(client_id: str, user_id: str = Depends(verify_token)):
+    # Check if client has invoices
+    invoice_count = await db.invoices.count_documents({"user_id": user_id, "client_id": client_id})
+    if invoice_count > 0:
+        raise HTTPException(status_code=400, detail=f"Impossible de supprimer : {invoice_count} facture(s) liée(s) à ce client")
+    
+    result = await db.clients.delete_one({"id": client_id, "user_id": user_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Client non trouvé")
+    
+    return {"message": "Client supprimé avec succès"}
+
+# Phase 2: PDF Generation
+def generate_invoice_pdf(invoice: Invoice, user_profile: dict, user_info: dict) -> bytes:
+    """Generate PDF for invoice with French legal mentions"""
+    buffer = io.BytesIO()
+    
+    # Create PDF document
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+    story = []
+    
+    # Custom styles
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=16,
+        spaceAfter=30,
+        textColor=colors.HexColor('#007AFF')
+    )
+    
+    header_style = ParagraphStyle(
+        'HeaderStyle',
+        parent=styles['Normal'],
+        fontSize=10,
+        spaceAfter=12
+    )
+    
+    # Invoice header
+    story.append(Paragraph(f"FACTURE {invoice.invoice_number}", title_style))
+    story.append(Spacer(1, 12))
+    
+    # User info (prestaire)
+    user_info_text = f"""
+    <b>{user_info['first_name']} {user_info['last_name']}</b><br/>
+    Micro-entrepreneur<br/>
+    Email: {user_info['email']}<br/>
+    Activité: {user_profile['activity_type']}
+    """
+    story.append(Paragraph(user_info_text, header_style))
+    story.append(Spacer(1, 20))
+    
+    # Client info
+    client_info_text = f"""
+    <b>Facturé à :</b><br/>
+    {invoice.client_name}<br/>
+    {invoice.client_address}<br/>
+    Email: {invoice.client_email}
+    """
+    story.append(Paragraph(client_info_text, header_style))
+    story.append(Spacer(1, 20))
+    
+    # Invoice details table
+    data = [
+        ['Description', 'Montant HT', 'TVA', 'Montant TTC'],
+        [invoice.description, f"{invoice.amount_ht:.2f} €", f"{invoice.vat_amount:.2f} €", f"{invoice.amount_ttc:.2f} €"]
+    ]
+    
+    table = Table(data, colWidths=[8*cm, 3*cm, 2*cm, 3*cm])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#007AFF')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    
+    story.append(table)
+    story.append(Spacer(1, 30))
+    
+    # Legal mentions
+    if user_profile.get('vat_regime') == 'franchise':
+        legal_text = "TVA non applicable, art. 293 B du CGI"
+    else:
+        legal_text = f"TVA applicable - Régime: {user_profile.get('vat_regime', 'Standard')}"
+    
+    story.append(Paragraph(f"<i>{legal_text}</i>", styles['Normal']))
+    story.append(Spacer(1, 10))
+    
+    # Payment info
+    if invoice.due_date:
+        due_text = f"Date d'échéance: {invoice.due_date.strftime('%d/%m/%Y')}"
+        story.append(Paragraph(due_text, styles['Normal']))
+    
+    story.append(Spacer(1, 20))
+    story.append(Paragraph(f"Facture créée le {invoice.created_at.strftime('%d/%m/%Y')}", header_style))
+    
+    # Build PDF
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.getvalue()
+
+@api_router.get("/invoices/{invoice_id}/pdf")
+async def download_invoice_pdf(invoice_id: str, user_id: str = Depends(verify_token)):
+    # Get invoice
+    invoice_doc = await db.invoices.find_one({"id": invoice_id, "user_id": user_id})
+    if not invoice_doc:
+        raise HTTPException(status_code=404, detail="Facture non trouvée")
+    
+    # Get user profile and info
+    profile_doc = await db.profiles.find_one({"user_id": user_id})
+    user_doc = await db.users.find_one({"id": user_id})
+    
+    if not profile_doc or not user_doc:
+        raise HTTPException(status_code=400, detail="Profil utilisateur requis")
+    
+    # Generate PDF
+    invoice = Invoice(**invoice_doc)
+    pdf_data = generate_invoice_pdf(invoice, profile_doc, user_doc)
+    
+    # Update invoice with PDF path (in a real system, save to S3/cloud storage)
+    pdf_filename = f"facture_{invoice.invoice_number}_{datetime.now().strftime('%Y%m%d')}.pdf"
+    await db.invoices.update_one(
+        {"id": invoice_id, "user_id": user_id},
+        {"$set": {"pdf_path": pdf_filename}}
+    )
+    
+    # Return PDF as response
+    return Response(
+        content=pdf_data,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={pdf_filename}"}
+    )
 @api_router.post("/invoices", response_model=Invoice)
 async def create_invoice(invoice_data: InvoiceCreate, user_id: str = Depends(verify_token)):
     # Get user profile for VAT calculation
