@@ -167,15 +167,18 @@
 
   - task: "Mock Obligations System"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Implemented mock URSSAF and VAT obligations initialization based on user profile. Ready for testing."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTED: Mock obligations system working correctly. Creates appropriate obligations based on user profile (URSSAF monthly/quarterly, VAT obligations for non-franchise regimes). Obligations properly integrated with dashboard display. Checklist items and due dates calculated correctly."
 
 ## frontend:
   - task: "Authentication Screens"
