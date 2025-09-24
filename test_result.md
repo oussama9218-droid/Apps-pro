@@ -243,15 +243,18 @@
 
   - task: "Navigation Setup"
     implemented: true
-    working: "NA"
-    file: "/app/frontend/app/navigation/Navigation.tsx"
+    working: true
+    file: "/app/frontend/app/components/MainNavigator.tsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Implemented navigation with auth flow, onboarding flow, and main tabs. Includes authentication context. Not tested yet."
+        - working: true
+        - agent: "main"
+        - comment: "✅ UPDATED: Complete navigation implemented with tab-based main app (Dashboard/Factures/Profil). Full user flow tested: registration → onboarding → dashboard with working tab navigation. Ready for comprehensive frontend testing."
 
 ## metadata:
   created_by: "main_agent"
