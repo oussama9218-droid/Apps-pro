@@ -291,74 +291,87 @@ function AddClientForm({ onBack, onSuccess }: { onBack: () => void; onSuccess: (
         <View style={styles.placeholder} />
       </View>
 
-      <View style={styles.form}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Nom du client *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nom de l'entreprise ou de la personne"
-            value={formData.name}
-            onChangeText={(value) => updateFormData('name', value)}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="contact@client.com"
-            value={formData.email}
-            onChangeText={(value) => updateFormData('email', value)}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>SIRET (optionnel)</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="12345678901234"
-            value={formData.siret}
-            onChangeText={(value) => updateFormData('siret', value)}
-            keyboardType="numeric"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Adresse *</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="123 rue de la République&#10;75001 Paris"
-            value={formData.address}
-            onChangeText={(value) => updateFormData('address', value)}
-            multiline
-            numberOfLines={3}
-            textAlignVertical="top"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Téléphone (optionnel)</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="01 23 45 67 89"
-            value={formData.phone}
-            onChangeText={(value) => updateFormData('phone', value)}
-            keyboardType="phone-pad"
-          />
-        </View>
-
-        <TouchableOpacity
-          style={[styles.createButton, loading && styles.disabledButton]}
-          onPress={handleCreateClient}
-          disabled={loading}
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={100}
+      >
+        <ScrollView 
+          style={styles.form}
+          contentContainerStyle={styles.formContent}
+          keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.createButtonText}>
-            {loading ? 'Création...' : 'Créer le client'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Nom du client *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nom de l'entreprise ou de la personne"
+              value={formData.name}
+              onChangeText={(value) => updateFormData('name', value)}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="contact@client.com"
+              value={formData.email}
+              onChangeText={(value) => updateFormData('email', value)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>SIRET (optionnel)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="12345678901234"
+              value={formData.siret}
+              onChangeText={(value) => updateFormData('siret', value)}
+              keyboardType="numeric"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Adresse *</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="123 rue de la République&#10;75001 Paris"
+              value={formData.address}
+              onChangeText={(value) => updateFormData('address', value)}
+              multiline
+              numberOfLines={3}
+              textAlignVertical="top"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Téléphone (optionnel)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="01 23 45 67 89"
+              value={formData.phone}
+              onChangeText={(value) => updateFormData('phone', value)}
+              keyboardType="phone-pad"
+            />
+          </View>
+
+          <TouchableOpacity
+            style={[styles.createButton, loading && styles.disabledButton]}
+            onPress={handleCreateClient}
+            disabled={loading}
+          >
+            <Text style={styles.createButtonText}>
+              {loading ? 'Création...' : 'Créer le client'}
+            </Text>
+          </TouchableOpacity>
+          
+          {/* Add some bottom padding for better scrolling */}
+          <View style={{ height: 50 }} />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
