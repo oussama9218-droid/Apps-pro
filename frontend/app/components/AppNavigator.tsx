@@ -8,8 +8,8 @@ import LoginScreen from '../screens/auth/LoginScreen';
 // Onboarding Flow
 import OnboardingFlow from './OnboardingFlow';
 
-// Main App Screen
-import DashboardScreen from '../screens/main/DashboardScreen';
+// Main App Navigation
+import MainNavigator from './MainNavigator';
 
 export default function AppNavigator() {
   const { user, loading } = useAuth();
@@ -32,8 +32,8 @@ export default function AppNavigator() {
     return <OnboardingFlow />;
   }
 
-  // Show main dashboard
-  return <DashboardScreen />;
+  // Show main app with navigation
+  return <MainNavigator />;
 }
 
 const styles = StyleSheet.create({
