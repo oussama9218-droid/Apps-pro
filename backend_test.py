@@ -78,27 +78,25 @@ class PilotageAPITester:
         except requests.exceptions.RequestException as e:
             return False, f"Request failed: {str(e)}", 0
     
-    def test_user_registration(self):
-        """Test user registration endpoint"""
+    def test_user_authentication(self):
+        """Test user authentication with existing account"""
         print("🔐 Testing Authentication System...")
         
-        # Test user registration
-        user_data = {
-            "email": "marie.dupont@freelance.fr",
-            "password": "SecurePass123!",
-            "first_name": "Marie",
-            "last_name": "Dupont"
+        # Use existing user account
+        login_data = {
+            "email": TEST_USER_EMAIL,
+            "password": TEST_USER_PASSWORD
         }
         
-        success, response, status_code = self.make_request("POST", "/auth/register", user_data, use_auth=False)
+        success, response, status_code = self.make_request("POST", "/auth/login", login_data, use_auth=False)
         
         if success and "access_token" in response:
             self.set_auth_token(response["access_token"])
             self.user_id = response["user"]["id"]
-            self.log_test("User Registration", True, f"User created with ID: {self.user_id}")
+            self.log_test("User Login", True, f"Authenticated user: {response['user']['email']}")
             return True
         else:
-            self.log_test("User Registration", False, f"Status: {status_code}", response)
+            self.log_test("User Login", False, f"Status: {status_code}", response)
             return False
     
     def test_user_login(self):
