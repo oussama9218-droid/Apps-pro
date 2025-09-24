@@ -198,7 +198,7 @@
 
   - task: "Onboarding Flow"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/app/screens/onboarding/"
     stuck_count: 0
     priority: "high"
@@ -207,6 +207,9 @@
         - working: "NA"
         - agent: "main"
         - comment: "Implemented complete onboarding flow: welcome, activity type, URSSAF periodicity, VAT regime, and thresholds configuration. Not tested yet."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTED: Onboarding flow working correctly. Welcome screen displays properly with personalized greeting (Bienvenue Marie!), activity type selection screen functional with BIC/BNC options and proper selection UI, progress indicators working. User flow from registration → onboarding welcome → configuration steps is seamless. Mobile-first design implemented with proper touch targets and responsive layout."
 
   - task: "Dashboard Screen"
     implemented: true
